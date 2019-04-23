@@ -133,16 +133,18 @@ def renderFrameBottom(parent):
     frame = Tkinter.Frame(parent)
     frame.pack()
     #
-    btn1 = Tkinter.Button(frame, text='导出为js', command=onEvtSaveToJs, width=15)
-    btn2 = Tkinter.Button(frame, text='导出为json', command=onEvtSaveToJson, width=15)
-    btn3 = Tkinter.Button(frame, text='打开目录', command=onEvtOpenOutDir, width=15)
-    btn4 = Tkinter.Button(frame, text='保存配置', command=onEvtAddSection, width=15)
-    btn5 = Tkinter.Button(frame, text='删除配置', command=onEvtDeleteSection, width=15)
+    btn1 = Tkinter.Button(frame, text='导出为js', command=onEvtSaveToJs, width=12)
+    btn2 = Tkinter.Button(frame, text='导出为json', command=onEvtSaveToJson, width=12)
+    btn3 = Tkinter.Button(frame, text='打开前端目录', command=onEvtOpenOutDir, width=12)
+    btn4 = Tkinter.Button(frame, text='打开后端目录', command=onEvtOpenTmpDir, width=12)
+    btn5 = Tkinter.Button(frame, text='保存配置', command=onEvtAddSection, width=12)
+    btn6 = Tkinter.Button(frame, text='删除配置', command=onEvtDeleteSection, width=12)
     btn1.grid(row=1, column=1)
     btn2.grid(row=1, column=2)
     btn3.grid(row=1, column=3)
     btn4.grid(row=1, column=4)
     btn5.grid(row=1, column=5)
+    btn6.grid(row=1, column=6)
 
 def renderRoot():
     global rootWin
@@ -187,6 +189,20 @@ def createDir(dir):
         return
     # os.mkdir(dir)  # 创建单个文件夹
     os.makedirs(dir)  # 创建多级文件夹
+
+def openDir(dir_name):
+    section = name.get()
+    if setSection(section):
+        path = os.path.realpath('.')
+        if is_py2:
+            path = path.decode('GBK')
+        path_out = path + '\\' + dir_name + '\\' + section + "\\"
+        if is_py2:
+            path_out = path_out.encode('GBK')
+        createDir(path_out)
+        os.system("explorer " + path_out)
+        return
+    showInfo('打开目录失败')
 
 def saveToFile(xls_out_end, xls_str_dot, xml_out_pre, xml_out_end, xml_out_name, xml_str_dot, xml_str_newidn, xml_str_newline):
     # print(sys.path[0])
@@ -265,18 +281,10 @@ def onEvtSaveToJson():
         showInfo('导出失败')
 
 def onEvtOpenOutDir():
-    section = name.get()
-    if setSection(section):
-        path = os.path.realpath('.')
-        if is_py2:
-            path = path.decode('GBK')
-        path_out = path + '\\.out\\' + section + "\\"
-        if is_py2:
-            path_out = path_out.encode('GBK')
-        createDir(path_out)
-        os.system("explorer " + path_out)
-        return
-    showInfo('打开目录失败')
+    openDir('.out')
+
+def onEvtOpenTmpDir():
+    openDir('.tmp')
 
 # -------------------------------------------------
 
