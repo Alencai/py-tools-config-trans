@@ -135,12 +135,14 @@ def renderFrameBottom(parent):
     #
     btn1 = Tkinter.Button(frame, text='导出为js', command=onEvtSaveToJs, width=15)
     btn2 = Tkinter.Button(frame, text='导出为json', command=onEvtSaveToJson, width=15)
-    btn3 = Tkinter.Button(frame, text='保存配置', command=onEvtAddSection, width=15)
-    btn4 = Tkinter.Button(frame, text='删除配置', command=onEvtDeleteSection, width=15)
+    btn3 = Tkinter.Button(frame, text='打开目录', command=onEvtOpenOutDir, width=15)
+    btn4 = Tkinter.Button(frame, text='保存配置', command=onEvtAddSection, width=15)
+    btn5 = Tkinter.Button(frame, text='删除配置', command=onEvtDeleteSection, width=15)
     btn1.grid(row=1, column=1)
     btn2.grid(row=1, column=2)
     btn3.grid(row=1, column=3)
     btn4.grid(row=1, column=4)
+    btn5.grid(row=1, column=5)
 
 def renderRoot():
     global rootWin
@@ -196,8 +198,8 @@ def saveToFile(xls_out_end, xls_str_dot, xml_out_pre, xml_out_end, xml_out_name,
     path = os.path.realpath('.')
     if is_py2:
         path = path.decode('GBK')
-    path_tmp = path + '/.tmp/' + section + "/"
-    path_out = path + '/.out/' + section + "/"
+    path_tmp = path + '\\.tmp\\' + section + "\\"
+    path_out = path + '\\.out\\' + section + "\\"
     if is_py2:
         createDir(path_tmp.encode('GBK'))
         createDir(path_out.encode('GBK'))
@@ -261,6 +263,20 @@ def onEvtSaveToJson():
         showInfo('导出成功')
     else:
         showInfo('导出失败')
+
+def onEvtOpenOutDir():
+    section = name.get()
+    if setSection(section):
+        path = os.path.realpath('.')
+        if is_py2:
+            path = path.decode('GBK')
+        path_out = path + '\\.out\\' + section + "\\"
+        if is_py2:
+            path_out = path_out.encode('GBK')
+        createDir(path_out)
+        os.system("explorer " + path_out)
+        return
+    showInfo('打开目录失败')
 
 # -------------------------------------------------
 

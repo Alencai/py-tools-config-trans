@@ -1,4 +1,4 @@
-基于 python2.7 编写
+基于 python2.7 编写，支持 python3 环境运行
 
 可将指定目录下的xml或者excel文件，转化为js或者json格式。
 
