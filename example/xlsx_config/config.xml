@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--说明
+	table : 配置表的基本项
+	table.path 	:  Excel表路径
+	table.sheetname : Excel表中选用的Sheet名称
+	table.jsonname : 输出打表后的文件名称
+	table/field : 表的字段信息
+	table/field.name : 输出JSON的字段名称(服务器、客户端用)
+	table/field.map : Excel表的字段映射名称
+	table/field.type : 字段数据类型(int 整型, double 浮点型, string 字符串型)
+-->
+<config>
+	<table path="file2.xlsx" sheetname="Sheet1" jsonname="file2">
+		<field name="id" map="id" type="int"/>
+		<field name="name" map="name" type="string"/>
+	</table>
+</config>
