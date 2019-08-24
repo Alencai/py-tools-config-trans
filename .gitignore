@@ -1,6 +1,8 @@
 *.pyc
+*.spec
 .out/
 .tmp/
-build/
-*.spec
-dist/
+.vs/
+/dist/
+/build/
+/__pycache__/

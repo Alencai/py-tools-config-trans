@@ -10,8 +10,9 @@
 	table/field.type : 字段数据类型(int 整型, double 浮点型, string 字符串型)
 -->
 <config>
-	<table path="file2.xlsx" sheetname="Sheet1" jsonname="file2">
+	<table path="excel1.xlsx" sheetname="Sheet1" jsonname="excel1">
 		<field name="id" map="id" type="int"/>
 		<field name="name" map="name" type="string"/>
+		<field name="age" map="age" type="string"/>
 	</table>
 </config>

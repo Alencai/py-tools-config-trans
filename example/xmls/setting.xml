@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--说明
+	table : 配置表的基本项
+	table.path 	:  xml表路径
+	table.jsonname : 输出打表后的文件名称
+    table.autonumber : 是否自动判断int、double类型并以此类型存储（0否、1是）
+    table/number: 指定该字段为number（autonumber=0时，默认全部导出为string）
+    table/string: 指定该字段为string（autonumber=1时，默认将符合的字符串导出为number）
+	table/array: array数组: 节点名称（树状结构，每一层用“.”隔开）
+	table/dict:  dict字典:  节点名称（树状结构，每一层用“.”隔开）
+	table/dict.key:  dict字典的主键
+-->
+<config>
+	<table path="xml1.xml" jsonname="xml1" autonumber="0">
+        <number> data1.data11.id </number>
+        <number> data1.data11.value </number>
+        <string> data1.data11.desc </string>
+        <array> data2.data21 </array>
+        <array> data3.data31 </array>
+        <dict key="id"> data2.data21.data211 </dict>
+        <number> data7 </number>
+	</table>
+	<table path="xml1.xml" jsonname="xml2" autonumber="1">
+        <array> data2.data21 </array>
+        <array> data3.data31 </array>
+        <dict key="id"> data2.data21.data211 </dict>
+        <string> data7 </string>
+	</table>
+</config>
+
