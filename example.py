@@ -27,5 +27,11 @@ from _base import *
 # str_ret = replaceStr("abcdefg", "", "x", "[adf]")
 # print(str_ret)
 
+# # 示例： 测试UI
+ui = myui.MyTestUI()
+ui.setTitle('tkinter测试')
+ui.setSize(600, 600)
+ui.renderTests()
+ui.start()
 
 

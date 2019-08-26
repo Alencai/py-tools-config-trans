@@ -5,8 +5,9 @@ from _base import *
 
 if __name__ == "__main__":
     ui = myui.MyUI()
-    ui.setTitle('配置表转化')
-    ui.setSize(300, 400)
     ui.parseIni('config.ini')
+    ui.setTitle('配置表转化')
+    ui.setSize(400, 400)
+    ui.renderUI()
     ui.start()
 
