@@ -2,16 +2,19 @@
 # -*- coding: utf-8 -*-  
  
 import os, sys
+import random
+import threading
 
 # -------------------------------------------------
 
-from _base._mytestui import *
-
+from _base._str import *
+from _base._tk import *
 import _base._ini as ini
 
-# -------------------------------------------------
+# ---------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------
 
-class MyUI(MyBaseUI):
+class MyUI(TkBase):
     _iniParser = None
     _scroll = None
     _list = None
