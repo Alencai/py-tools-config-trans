@@ -51,7 +51,7 @@ class MyTestUI(TkBase):
         func2 and self.addWindow(name, lambda:func2(tkWindow.newEmpty(self._window, name)))
     
     def addWindow(self, name, func):
-        self._listwins.append({'name': name, 'func': func})
+        self._listwins.append([name, func])
 
     def renderTests(self):
         self.addWindow('Window', lambda:tkWindow.testWindow(self._window))

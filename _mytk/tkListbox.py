@@ -23,3 +23,23 @@ def testListbox(parent):
     tk.Button(parent, text='remove all', command=lambda:listbox.delete(0, tk.END)).pack()
 
 
+#-----------------------------------------------------------
+
+# 获取带滚动条的listbox
+def putScrollListbox(parent, command):
+    def click_evt(evt):
+        for idx in evt.widget.curselection():
+            return idx, evt.widget.get(idx)
+        return -1, None
+    scroll = tk.Scrollbar(parent) 
+    listbox = tk.Listbox(parent, yscrollcommand=scroll.set)
+    listbox.bind('<ButtonRelease-1>', lambda evt:command(*click_evt(evt)))
+    listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=tk.YES)
+    scroll.config(command=listbox.yview)
+    scroll.pack(side=tk.RIGHT, fill=tk.Y)
+    return listbox
+
+
+
+
+

@@ -8,6 +8,7 @@ import io
 
 # -------------------------------------------------
 
+from _base._funcs import *
 from _base._str import *
 from _base._re import *
 from _base._file import *
@@ -96,7 +97,7 @@ class MyParserExcel:
     def parseSettingXml(self, file_name):
         self.__settings = []
         xml_dom = xml.dom.minidom.parse(file_name)
-        assert xml_dom, ('error: can not find file: %s' % (file_name))
+        assert xml_dom, ('Error: can not find file: %s' % (file_name))
         ele_root = xml_dom.documentElement
         ele_sets = ele_root.getElementsByTagName('table')
         for setting in ele_sets:
@@ -124,7 +125,7 @@ class MyParserExcel:
             json_file = setting[KEY_JSONNAME]
             fields = setting[KEY_FIELDS]
             data = xlrd.open_workbook(file_name)
-            assert data, ('error: can not find file: %s' % (file_name))
+            assert data, ('Error: can not find file: %s' % (file_name))
             table = data.sheet_by_name(sheet_name)
             assert table, ('Error: can not find sheetname: %s' % (sheet_name))
             self._matchSettingFields(table, fields)

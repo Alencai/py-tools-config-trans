@@ -28,14 +28,8 @@ from _base import *
 # # 示例： 移除后缀文件
 # removeWithSuffix("./../.out/excels", "json")
 
-# 示例： 字符串替换
-str_ret = replaceStr("abcdefg", "", "x", "[adf]")
-print(str_ret)
-
-
-
-
-
-
+# # 示例： 字符串替换
+# str_ret = replaceStr("abcdefg", "", "x", "[adf]")
+# print(str_ret)
 
 

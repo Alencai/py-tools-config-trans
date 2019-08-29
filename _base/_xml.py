@@ -7,6 +7,7 @@ import xml.dom.minidom
 
 # -------------------------------------------------
 
+from _base._funcs import *
 from _base._str import *
 from _base._re import *
 from _base._file import *

@@ -5,13 +5,23 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 #-----------------------------------------------------------
 
-import threading
 from _base import *
 
+#-----------------------------------------------------------
+
+import threading
 if IS_PY3:
     from functools import reduce
 
 #-----------------------------------------------------------
+
+print('>>-----------------------------------------------')
+
+# 定时器
+def time_evt():
+    print('test')
+    threading.Timer(0.5, time_evt).start()
+time_evt()
 
 # 测试： range 、 enumerate 、 for 、 lambda
 
@@ -60,19 +70,43 @@ fun3 = lambda x, y: (x + y, x * y)
 fun4 = [(lambda x, y=i: x + y) for i in range(3)]
 print("--lambda 1. %d" % fun1())
 print("--lambda 2. %d" % fun2(1, 2))
-print("--lambda 3. %d %d" % fun3(2, 3))
+print("--lambda 3. %d %d" % fun3(2, 3)) # 返回多个参数
 print("--lambda 4. %d" % fun4[1](4))
 
 print('>>-----------------------------------------------')
 
-# 定时器
-def time_evt():
-    print('test')
-    threading.Timer(0.5, time_evt).start()
-time_evt()
+# 星号(*/**)操作符
 
+# 用于收集参数：
+def test1(*args, **kwargs):
+    print(args, kwargs)
+test1(1, 2, 3, a=1, b=2, c=3)
 
+print('--------------------')
 
+# 用于解参数：
+def test2(x, y, z, a, b, c):
+    print(x, y, z, a, b, c)
+args = [1, 2, 3]
+kwargs = {'a': 1, 'b': 2, 'c': 3}
+test2(*args, **kwargs)
 
+print('--------------------')
+
+# 奇怪的用法（复制dict）：
+def test3(**kwargs):
+    del kwargs['a'] # 删除一个元素，但不影响原来的
+    return kwargs
+kw1 = {'a': 1, 'b': 2, 'c': 3}
+kw2 = test3(**kw1)
+print(kw1, kw2)
+
+print('>>-----------------------------------------------')
+
+print(type(1), type(1.1), type('1'), type(False))
+print(type([]), type({}), type((1, 2)))
+print(type(test1), type(lambda:1))
+
+print('>>-----------------------------------------------')
 
 

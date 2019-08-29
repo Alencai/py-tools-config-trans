@@ -40,21 +40,7 @@ def enUnicode(txt):
 def fullStr(txt):
     return "\"" + txt + "\""
 
-# ---------------------------------------------------------------------
 
-def inputStr(txt):
-    # py2的input输入整数时，类型是整数而非字符串
-    if IS_PY2:
-        return raw_input(txt) 
-    return input(txt)
-
-def reloadSys():
-    if IS_PY2:
-        reload(sys)
-        sys.setdefaultencoding("utf-8")
-    else:
-        import importlib 
-        importlib.reload(sys)
 
 
 

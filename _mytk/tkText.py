@@ -27,5 +27,23 @@ def testText(parent):
     bt2.grid(row=1, column=2)
     bt3.grid(row=1, column=3)
 
+#-----------------------------------------------------------
+
+# 1. 获取一个滚动的，不可编辑的文本框
+def putScrollTextView(parent, width):
+    text = tk.Text(parent, height=8, state=tk.DISABLED)
+    scroll = tk.Scrollbar(parent, orient=tk.VERTICAL, command=text.yview)
+    scroll.place(relx=1, rely=0.5, relheight=1, anchor=tk.E)
+    text.place(relx=0, rely=0.5, width=width-int(scroll['width']), relheight=1, anchor=tk.W)
+    text.config(yscrollcommand=scroll.set)
+    return text
+
+# 1.1 对不可编辑的文本框插入数据
+def insertWithScrollText(text, data):
+    text.config(state=tk.NORMAL)
+    text.insert(tk.INSERT, data)
+    text.config(state=tk.DISABLED)
+
+
 
 

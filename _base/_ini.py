@@ -61,16 +61,24 @@ class MyParserIni(ConfigParser):
             # super().read(filename) 
             ConfigParser.read(self, filename)
     
-    def save(self, savename = None):
-        file = open(savename or self.__filename, 'w')
-        self.write(file)
+    def save(self, jsondata=None, savename=None):
+        savename = savename or self.__filename
+        str_ret = ''
+        for secname in jsondata:
+            item = jsondata[secname]
+            str_ret += "[" + secname + "]\n"
+            for optname in item:
+                str_ret += optname + "=" + item[optname] + "\n"
+        with io.open(savename, mode='w', encoding='UTF-8') as file:
+            file.write(str_ret)
+        pass
     
     def toJson(self):
         rets = {}
         for secname in self.sections():
             item = {}
-            for option in self.options(secname):
-                item[option] = self.get(secname, option)
+            for optname in self.options(secname):
+                item[optname] = self.get(secname, optname)
             rets[secname] = item
         return rets
     

@@ -1,10 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-  
 
-import sys
-import random
-
-IS_PY2 = (sys.version_info[0] == 2)
+from _base import *
 
 if IS_PY2: 
     import Tkinter as tk
@@ -16,10 +13,6 @@ else:
     from tkinter import ttk
 
 
-def randomColor():
-    nums = '0123456789ABCDEF'
-    color = '#'
-    for i in range(6):
-        color += nums[random.randint(0, 15)]
-    return color
+
+
 
