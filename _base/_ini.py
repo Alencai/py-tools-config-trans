@@ -12,7 +12,7 @@ from _base._str import *
 # -------------------------------------------------
 
 if IS_PY2: 
-    from ConfigParser import ConfigParser 
+    from ConfigParser import ConfigParser
 else:
     from configparser import ConfigParser
 
@@ -46,29 +46,44 @@ class MyParserIni(ConfigParser):
     def __checkFile(self, filename):
         if not os.path.exists(filename):
             open(filename, 'w')
+        pass
     
     #----------------------------------------
 
     def read(self, filename):
+        if filename:
+            self.__checkFile(filename)
+            if IS_PY2:
+                import codecs
+                file = codecs.open(filename, 'r', 'utf-8-sig')
+                ConfigParser.readfp(self, file) 
+            else:
+                # super(MyParser, self).read(filename) 可指定为当前类的父类
+                # super().read(filename) 
+                ConfigParser.read(self, filename)
         self.__filename = filename
-        self.__checkFile(filename)
-        if IS_PY2:
-            import codecs
-            file = codecs.open(filename, 'r', 'utf-8-sig')
-            ConfigParser.readfp(self, file) 
-        else:
-            # super(MyParser, self).read(filename) 可指定为当前类的父类
-            # super().read(filename) 
-            ConfigParser.read(self, filename)
+        pass
+    
+    def clear(self):
+        for secname in self.sections():
+            self.remove_section(secname)
+        pass
+
+    def reload(self):
+        self.clear()
+        self.read(self.__filename)
+        pass
     
     def save(self, jsondata=None, savename=None):
         savename = savename or self.__filename
         str_ret = ''
-        for secname in jsondata:
-            item = jsondata[secname]
-            str_ret += "[" + secname + "]\n"
-            for optname in item:
-                str_ret += optname + "=" + item[optname] + "\n"
+        if jsondata:
+            for secname in jsondata:
+                item = jsondata[secname]
+                str_ret += "[" + secname + "]\n"
+                for optname in item:
+                    str_ret += optname + "=" + item[optname] + "\n"
+            # self.read_dict(jsondata) # py3有这个方法，可直接从dict读取ini内容
         with io.open(savename, mode='w', encoding='UTF-8') as file:
             file.write(str_ret)
         pass
@@ -89,8 +104,13 @@ class MyParserIni(ConfigParser):
                 print("   " + option + " = " + self.get(secname, option))
             # for item in self.items(secname):
             #     print(item)
+        pass
     
     def dumpJson(self):
         ret_json = self.toJson()
-        ret_str = json.dumps(ret_json, sort_keys=True, indent=4)
+        ret_str = json.dumps(ret_json, sort_keys=False, indent=4)
         print(ret_str)
+        pass
+
+
+

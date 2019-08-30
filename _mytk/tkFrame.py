@@ -85,4 +85,12 @@ def putFrameRowBtns(parent, *args):
     frame.pack(side=tk.TOP, ipady=5)
     return frame
 
-
+# 获取一个带名字的Frame
+def putFrameRowWithName(parent, name, bg='#ffffff'):
+    frame = tk.Frame(parent, bg=bg)
+    label = tk.Label(frame, text=name, fg=diverseRGB(bg), bg=bg)
+    subfr = tk.Frame(frame)
+    frame.pack(fill=tk.X)
+    label.pack(side=tk.TOP, anchor=tk.NW)
+    subfr.pack(fill=tk.X, padx=10, pady=10)
+    return subfr

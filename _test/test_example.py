@@ -32,4 +32,11 @@ from _base import *
 # str_ret = replaceStr("abcdefg", "", "x", "[adf]")
 # print(str_ret)
 
+# 示例： 颜色
+color = randomRGB()
+print(color, reverseRGB(color))
+
+
+
+
 

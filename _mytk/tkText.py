@@ -41,8 +41,9 @@ def putScrollTextView(parent, width):
 # 1.1 对不可编辑的文本框插入数据
 def insertWithScrollText(text, data):
     text.config(state=tk.NORMAL)
-    text.insert(tk.INSERT, data)
+    text.insert(tk.END, data)
     text.config(state=tk.DISABLED)
+    text.yview_moveto(1)
 
 
 

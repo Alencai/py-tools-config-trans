@@ -27,20 +27,22 @@ time_evt()
 
 print('>>-----------------------------------------------')
 
-li_data = range(2)
-# li_data = [0, 1]                           # 与上一样
-# li_data = [i for i in range(2)]            # 与上一样
-# li_data = [i for i in range(10) if i < 2]  # 与上一样
-en_data = enumerate(li_data)
+li_data1 = range(2)
+# li_data1 = [0, 1]                           # 与上一样
+# li_data1 = [i for i in range(2)]            # 与上一样
+# li_data1 = [i for i in range(10) if i < 2]  # 与上一样
+li_data2 = range(3, 10, 2)
+en_data = enumerate(li_data1)
 kv_data = {'a': 'apple', 'b': 'banana'}
 
-print(li_data)
+print(li_data1)
+print(li_data2)
 print(en_data)
 print(kv_data)
 
 print('>>-----------------------------------------------')
 
-for value in li_data:
+for value in li_data1:
     print(value)
 
 print('--------------------')

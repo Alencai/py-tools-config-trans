@@ -27,50 +27,43 @@ from _mytk.tkBase import *
 # ---------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
 
+# https://docs.python.org/3/library/tkinter.html
+# https://tkdocs.com/tutorial/index.html
 # https://www.cnblogs.com/shwee/p/9427975.html
 # http://c.biancheng.net/python/tkinter/
 
+
 class MyTestUI(TkBase):
     _frame = None
-    _listwins = []
 
     def __init__(self, *args, **kwargs):
         super(MyTestUI, self).__init__(*args, **kwargs)
         self._frame = tkScrollbar.getVScrollFrame(self._window)
-    
-    # -------------------------------------------------
-
-    def addFrame(self, name, func1=None, func2=None):
-        frame = tk.Frame(self._frame, bg=randomColor())
-        frame.pack(fill=tk.X)
-        label = tk.Label(frame, text=name)
-        label.pack(side=tk.TOP, anchor=tk.NW)
-        sub = tk.Frame(frame)
-        sub.pack(fill=tk.X, padx=10, pady=10)
-        func1 and func1(sub)
-        func2 and self.addWindow(name, lambda:func2(tkWindow.newEmpty(self._window, name)))
-    
-    def addWindow(self, name, func):
-        self._listwins.append([name, func])
 
     def renderTests(self):
-        self.addWindow('Window', lambda:tkWindow.testWindow(self._window))
-        self.addFrame('Label',      tkLabel.testLabel,         tkLabel.testLabel)
-        self.addFrame('Button',     tkButton.testButton,       tkButton.testButton)
-        self.addFrame('Entry',      tkEntry.testEntry,         tkEntry.testEntry)
-        self.addFrame('Text',       tkText.testText,           tkText.testText)
-        self.addFrame('Scrollbar',  tkScrollbar.testScrollbar, tkScrollbar.testScrollbar)
-        self.addFrame('Radiobutton',tkRadiobutton.testRadioBtn,tkRadiobutton.testRadioBtn)
-        self.addFrame('Checkbutton',tkCheckbutton.testCheckBtn,tkCheckbutton.testCheckBtn)
-        self.addFrame('Scale',      tkScale.testScale,         tkScale.testScale)
-        self.addFrame('ListBox',    tkListbox.testListbox,     tkListbox.testListbox)
-        self.addFrame('Canvas',     tkCanvas.testCanvas,       tkCanvas.testCanvas)
-        self.addFrame('Frame',      tkFrame.testFrame,         tkFrame.testFrame)
-        self.addFrame('Combobox',   ttkCombobox.testCombobox,  ttkCombobox.testCombobox)
-        self.addFrame('Pack',       tkPack.testPack,           tkPack.testPack)
-        self.addFrame('Place',      tkPlace.testPlace,         tkPlace.testPlace)
-        self.addFrame('Grid',       tkGrid.testGrid,           tkGrid.testGrid)
-        self.addFrame('Message',    tkMessage.testMessage,     tkMessage.testMessage)
-        tkMenu.testMenuBar(self._window, self._listwins)
+        tests = [
+            ['Label',      tkLabel.testLabel],
+            ['Button',     tkButton.testButton],
+            ['Entry',      tkEntry.testEntry],
+            ['Text',       tkText.testText],
+            ['Scrollbar',  tkScrollbar.testScrollbar],
+            ['Radiobutton',tkRadiobutton.testRadioBtn],
+            ['Checkbutton',tkCheckbutton.testCheckBtn],
+            ['Scale',      tkScale.testScale],
+            ['ListBox',    tkListbox.testListbox],
+            ['Canvas',     tkCanvas.testCanvas],
+            ['Frame',      tkFrame.testFrame],
+            ['Combobox',   ttkCombobox.testCombobox],
+            ['Pack',       tkPack.testPack],
+            ['Place',      tkPlace.testPlace],
+            ['Grid',       tkGrid.testGrid],
+            ['Message',    tkMessage.testMessage],
+        ]
+        for menu in tests:
+            menu[1](tkFrame.putFrameRowWithName(self._frame, menu[0], randomRGB()))
+            menu[1] = lambda name=menu[0],func=menu[1]:func(tkWindow.newEmpty(self._window, name))
+        tests.append(['Window', lambda:tkWindow.testWindow(self._window)])
+        tkMenu.testMenuBar(self._window, tests)
+
 
 

@@ -31,11 +31,16 @@ class MainParsor(TkBase):
         self._ini_parser.read(ini_path)
         self._ini_json = self._ini_parser.toJson()
         pass
+    def reloadIni(self):
+        self._ini_parser.reload()
+        self._ini_json = self._ini_parser.toJson()
+        pass
 
 # ---------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
 
 class MainInputVar(MainParsor):
+    _select_key = None     # 键值
     _txtvar_key = None     # 项目键值
     _txtvar_name = None    # 项目名
     _txtvar_type = None    # 项目配置类型
@@ -45,6 +50,7 @@ class MainInputVar(MainParsor):
     # -------------------------------------------------
     def __init__(self, *args, **kwargs):
         super(MainInputVar, self).__init__(*args, **kwargs)
+        self._select_key = ''
         self._txtvar_key = tk.StringVar()
         self._txtvar_name = tk.StringVar()
         self._txtvar_type = tk.StringVar()
@@ -52,7 +58,17 @@ class MainInputVar(MainParsor):
         self._txtvar_pathin = tk.StringVar()
         self._txtvar_pathout = tk.StringVar()
         pass
+    def _getJsonVar(self, data, key):
+        return key in data and data[key] or ''
+    def _getTxtVar(self, var):
+        var = var.get()
+        return var and var.strip() or ''
+    def _removeVars(self, key):
+        if key in self._ini_json:
+            del self._ini_json[key]
+        pass
     def _showVars(self, key, data):
+        self._select_key = key
         self._txtvar_key.set(key)
         self._txtvar_name.set(self._getJsonVar(data, 'title'))
         self._txtvar_type.set(self._getJsonVar(data, 'type'))
@@ -60,14 +76,10 @@ class MainInputVar(MainParsor):
         self._txtvar_pathin.set(self._getJsonVar(data, 'path_in'))
         self._txtvar_pathout.set(self._getJsonVar(data, 'path_out'))
         pass
-    def _getJsonVar(self, data, key):
-        return key in data and data[key] or ''
-    def _getTxtVar(self, var):
-        tup = var.get()
-        return tup and tup.strip() or ''
     def _setVars(self, key):
         if not self._checkInputs():
             return
+        self._select_key = key
         data = self._ini_json[key] = {}
         data['title'] = self._getTxtVar(self._txtvar_name)
         data['type'] = self._getTxtVar(self._txtvar_type)
@@ -82,6 +94,7 @@ class MainInputVar(MainParsor):
         path_in = self._getTxtVar(self._txtvar_pathin)
         path_out = self._getTxtVar(self._txtvar_pathout)
         return self._checkStr(proj_key) and self._checkStr(proj_name) and self._checkFile(path_set) and self._checkDir(path_in) and self._checkDir(path_out)
+
 
 # ---------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
@@ -113,7 +126,7 @@ class MainUI(MainExport):
     def __init__(self, *args, **kwargs):
         super(MainUI, self).__init__(*args, **kwargs)
         self._renderUI(900, 600, 260, 400)
-        self.log('初始化成功！')
+        self.log(deUTF8('初始化成功！'))
         pass
     # -------------------------------------------------
     def _renderUI(self, width, height, list_width, list_height):
@@ -139,79 +152,134 @@ class MainUI(MainExport):
         tkFrame.putFrameRowBtns(frm_br_, ['添加', self._onEvtAdd], ['删除', self._onEvtDel], ['保存', self._onEvtSave])
         tkFrame.putFrameRowLine(frm_br_, row_br_)
         tkFrame.putFrameRowBtns(frm_br_, ['导出json', self._onEvtExportJson])
-        tkMenu.setMenuTopCmds(self._window, ['帮助', ['关于', self._onEvtAbout]])
+        tkMenu.setMenuTopCmds(self._window, [
+            ['文件', [
+                ['刷新列表', self._onEvtRefresh],
+                ['打开根目录', self._onEvtRootDir],
+            ]],
+            ['帮助', [
+                ['关于', self._onEvtAbout],
+            ]],
+        ])
         pass
+    
+    # -------------------------------------------------
+    # apis: 
+    def clearList(self):
+        self._tk_listbox.delete(0, self._tk_listbox.size())
+        pass
+    def insertListSingleKey(self, key):
+        self._tk_listbox.insert(tk.END, key)
+        pass
+    def insertListKeys(self, keys):
+        print(keys)
+        for key in keys:
+            self._tk_listbox.insert(tk.END, key)
+        pass
+    def selectListIdx(self, idx):
+        size = self._tk_listbox.size()
+        if 0 <= idx and idx < size:
+            key = self._tk_listbox.get(idx)
+            if key in self._ini_json:
+                self._tk_listbox.selection_clear(0, tk.END)
+                self._tk_listbox.selection_set(idx)
+                self._showVars(key, self._ini_json[key])
+        pass
+    def selectListKey(self, key):
+        items = self._tk_listbox.get(0, tk.END)
+        for idx in range(len(items)):
+            if items[idx] == key:
+                self.selectListIdx(idx)
+                break
+        pass
+    def refreshList(self):
+        self.clearList()
+        self.insertListKeys(self._ini_json.keys())
+        self.selectListIdx(0)
+        pass
+
     # -------------------------------------------------
     # events
     def _onEvtListBox(self, idx, key):
-        self._showVars(key, self._ini_json[key])
+        try:
+            self._showVars(key, self._ini_json[key])
+        except Exception as e:
+            self.error(e)
+        pass
+    def _onEvtRootDir(self):
+        try:
+            self._onEvtOpenDir('.', False)
+        except Exception as e:
+            self.error(e)
+        pass
+    def _onEvtRefresh(self):
+        try:
+            self.reloadIni()
+            self.refreshList()
+        except Exception as e:
+            self.error(e)
         pass
     def _onEvtAbout(self):
-        tkMessage.showMsgInfo(u'邮箱：alencai1990@foxmail.com', '联系方式')
+        try:
+            tkMessage.showMsgInfo('邮箱：alencai1990@foxmail.com', '联系方式')
+        except Exception as e:
+            self.error(e)
         pass
     def _onEvtOpenDir(self, value, isFile):
-        if isFile and value:
-            value = os.path.dirname(value)
-        if self._checkDir(value):
-            excSys('start "" %s' % (value))
+        try:
+            if isFile and value:
+                value = os.path.dirname(value)
+            if self._checkDir(value):
+                excSys('start "" %s' % (value))
+            pass
+        except Exception as e:
+            self.error(e)
         pass
     def _onEvtAdd(self):
         try:
             key = self._getTxtVar(self._txtvar_key)
-            assert (key.strip() != ''), ('Error: Empty key.')
-            assert (not key in self._ini_json), ('Error: Already has key: %s' % key)
-            self._setVars(key)
-            self._writeIniParser()
-            self.insertListKey(key)
+            assert (len(key) > 0), deUTF8('错误：键值不能为空')
+            assert (not key in self._ini_json), (deUTF8('错误：键值已经存在：%s') % key)
+            if tkMessage.showAskOkCancel(deUTF8('确认添加: %s') % key):
+                self._setVars(key)
+                self._writeIniParser()
+                self.insertListSingleKey(key)
+                self.selectListKey(key)
         except Exception as e:
             self.error(e)
         pass
     def _onEvtDel(self):
         try:
             key = self._getTxtVar(self._txtvar_key)
-            assert (key.strip() != ''), ('Error: Empty key.')
-            assert (key in self._ini_json), ('Error: cant not find key.')
-            self._ini_json.pop(key)
-            self._writeIniParser()
-            self.selectListFirst()
+            assert (len(key) > 0), deUTF8('错误：键值不能为空')
+            assert (key in self._ini_json), (deUTF8('错误：键值未找到：%s') % key)
+            if tkMessage.showAskOkCancel(deUTF8('确认删除: %s') % key):
+                self._removeVars(key)
+                self._writeIniParser()
+                self.refreshList()
+                self.selectListIdx(0)
         except Exception as e:
             self.error(e)
         pass
     def _onEvtSave(self):
         try:
             key = self._getTxtVar(self._txtvar_key)
-            assert (key.strip() != ''), ('Error: Empty key.')
-            self._setVars(key)
-            self._writeIniParser()
+            assert (len(key) > 0), deUTF8('错误：键值不能为空')
+            if tkMessage.showAskOkCancel(deUTF8('确认保存: %s') % key):
+                if self._select_key != key:
+                    self._removeVars(self._select_key)
+                self._setVars(key)
+                self._writeIniParser()
+                self.refreshList()
+                self.selectListKey(key)
         except Exception as e:
             self.error(e)
         pass
     def _onEvtExportJson(self):
-        self._exportFile('json')
+        try:
+            self._exportFile('json')
+        except Exception as e:
+            self.error(e)
         pass
-    # -------------------------------------------------
-    # apis: 
-    def clearList(self):
-        self._tk_listbox.delete(0, self._tk_listbox.size())
-        pass
-    def insertListKey(self, key):
-        self._tk_listbox.insert(tk.END, key)
-        pass
-    def insertsList(self, arritems):
-        for key in arritems:
-            self._tk_listbox.insert(tk.END, key)
-        pass
-    def selectListFirst(self):
-        keys = self._ini_json.keys()
-        if len(keys) > 0:
-            self._tk_listbox.selection_set(0)
-            self._showVars(keys[0], self._ini_json[keys[0]])
-        pass
-    def refreshList(self):
-        self.clearList()
-        self.insertsList(self._ini_json.keys())
-        self.selectListFirst()
-        pass
-
 
 

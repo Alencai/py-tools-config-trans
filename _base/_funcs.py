@@ -1,10 +1,11 @@
 ﻿#! /usr/bin/python
 # -*- coding: UTF-8 -*-
 
+import os, sys
 import random
 
-from _base._static import *
-from _base._str import *
+from _base._static import IS_WIN32, IS_PY2, IS_PY3
+from _base._str import enGBK, deUTF8, fullStr
 
 # ---------------------------------------------------------------------
 
@@ -14,11 +15,11 @@ def cmdStr(str):
             return enGBK(deUTF8(fullStr(str)))
     return fullStr(str)
 
-# 命令返回值
+# 得到命令的返回值
 def excSys(str):
     return os.system(cmdStr(str))
 
-# 命令输出
+# 得到命令的输出
 def excOpen(str):
     return os.popen(cmdStr(str))
 
@@ -38,13 +39,6 @@ def reloadSys():
         import importlib 
         importlib.reload(sys)
 
-# ---------------------------------------------------------------------
 
-def randomColor():
-    nums = '0123456789ABCDEF'
-    color = '#'
-    for i in range(6):
-        color += nums[random.randint(0, 15)]
-    return color
 
 
