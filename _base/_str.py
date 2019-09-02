@@ -54,58 +54,72 @@ def diverseRGB(color):
     return color
 
 # ---------------------------------------------------------------------
-# 字符编码
+# 字符编码 （默认系统编码为utf8）
 
+# - py2: [str -> unicode]
+# - py3: [str -> str] # 不需要
 def deUTF8(txt):
-    if IS_PY2:  # 相当于： '中文' 转 u'中文'  
-        try:
-            txt = txt.decode("utf-8")
-        except:
-            print('Error: deUTF8 %s', txt)
+    if IS_PY2 and type(txt).__name__ == 'str' and hasattr(txt, 'decode'):
+        txt = txt.decode("utf-8")
     return txt
 
+# - py2: [unicode -> str] / [str -> str]
+# - py3: [str -> str] # 不需要
 def enUTF8(txt):
-    if IS_PY2:
-        try:
-            txt = txt.encode("utf-8")
-        except:
-            print('Error: enUTF8 %s', txt)
+    if IS_PY2 and type(txt).__name__ == 'unicode' and hasattr(txt, 'encode'):
+        txt = txt.encode("utf-8")
     return txt
 
+# - py2: [str -> str]
+# - py3: [bytes -> str] # 不需要
 def deGBK(txt):
-    if IS_PY2:
-        try:
-            txt = txt.decode('GBK')
-        except:
-            print('Error: deGBK %s', txt)
+    if IS_PY2 and hasattr(txt, 'decode'):
+        txt = txt.decode("GBK")
     return txt
 
+# - py2: [str -> str]
+# - py3: [str -> bytes] # 不需要
 def enGBK(txt):
-    if IS_PY2:
-        try:
-            txt = txt.encode('GBK')
-        except:
-            print('Error: enGBK %s', txt)
+    if IS_PY2 and hasattr(txt, 'encode'):
+        txt = txt.encode("GBK")
     return txt
 
+# '\u7528\u6237' 转 '用户' （py2在终端显示有问题，写入文件时正确）  
+# - py2: [str -> unicode -> str]
+# - py3: [str -> bytes -> str]
 def deUnicode(txt):
-    try:
-        if IS_PY3:
-            txt = txt.encode('utf-8')
-        # 相当于： '\u7528\u6237' 转 '用户'  
-        txt = txt.decode('unicode_escape')
-    except:
-        print('Error: deUnicode %s', txt)
+    if IS_PY3:
+        if type(txt).__name__ == 'str' and hasattr(txt, 'encode'):
+            txt = txt.encode("utf-8")
+    if hasattr(txt, 'decode'):
+        txt = txt.decode("unicode_escape")
+    if IS_PY2:
+        txt = txt.encode("utf-8")
     return txt
 
-def enUnicode(txt):
-    try:
-        if IS_PY3:
-            txt = txt.encode('utf-8')
-        txt = txt.encode('unicode_escape')
-    except:
-        print('Error: enUnicode %s', txt)
+# '用户' 转 '\u7528\u6237' （py2在终端显示有问题，写入文件时正确）
+# - py2: [unicode -> str] / [str -> unicode -> str]
+# - py3: [str -> bytes -> str]
+def enUnicode(txt): 
+    if IS_PY2:
+        if type(txt).__name__ == 'str' and hasattr(txt, 'decode'):
+            txt = txt.decode("utf-8")
+    if hasattr(txt, 'encode'):
+        txt = txt.encode("unicode_escape")
+    if IS_PY3:
+        txt = txt.decode("utf-8")
     return txt
+
+# 解码except报错信息 
+def parseException(msg):
+    tpn = type(msg).__name__
+    if tpn == "str":
+        return msg
+    # if tpn == "AssertionError":
+    if hasattr(msg, 'args') and len(msg.args) > 0:
+        return msg.args[0]
+    return 'unknow error'
+
 
 # ---------------------------------------------------------------------
 

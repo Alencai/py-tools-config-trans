@@ -10,9 +10,8 @@ from _base._str import enGBK, deUTF8, fullStr
 # ---------------------------------------------------------------------
 
 def cmdStr(str):
-    if IS_WIN32:
-        if IS_PY2:
-            return enGBK(deUTF8(fullStr(str)))
+    if IS_WIN32 and IS_PY2:
+        return enGBK(deUTF8(fullStr(str)))
     return fullStr(str)
 
 # 得到命令的返回值

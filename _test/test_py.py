@@ -17,15 +17,15 @@ if IS_PY3:
 
 print('>>-----------------------------------------------')
 
-# 定时器
-def time_evt():
-    print('test')
-    threading.Timer(0.5, time_evt).start()
-time_evt()
-
-# 测试： range 、 enumerate 、 for 、 lambda
+# # 定时器
+# def time_evt():
+#     print('test')
+#     threading.Timer(0.5, time_evt).start()
+# time_evt()
 
 print('>>-----------------------------------------------')
+
+# 测试： range 、 enumerate 、 for 、 lambda
 
 li_data1 = range(2)
 # li_data1 = [0, 1]                           # 与上一样
@@ -112,3 +112,14 @@ print(type(test1), type(lambda:1))
 print('>>-----------------------------------------------')
 
 
+def print_str(txt):
+    print(txt, type(txt))
+    appendFile(txt, 'abc.txt')
+txt = "1.用户\n2.用户\n3.用户"
+
+txt2 = 'hello world'
+print_str(txt2)
+txt2 = enUTF8(txt2)
+print_str(txt2)
+txt2 = deUTF8(txt2)
+print_str(txt2)

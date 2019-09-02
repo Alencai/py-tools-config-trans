@@ -60,7 +60,7 @@ class MyParserIni(ConfigParser):
             else:
                 # super(MyParser, self).read(filename) 可指定为当前类的父类
                 # super().read(filename) 
-                ConfigParser.read(self, filename)
+                ConfigParser.read(self, filename, 'utf-8')
         self.__filename = filename
         pass
     

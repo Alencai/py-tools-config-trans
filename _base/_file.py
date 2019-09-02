@@ -98,6 +98,12 @@ def writeFile(str_data, file_name):
     with io.open(file_name, mode='w+', encoding='UTF-8') as file:
         file.write(deUTF8(str_data))
 
+# 写文件
+def appendFile(str_data, file_name):
+    print('write file: %s' % file_name)
+    with io.open(file_name, mode='a+', encoding='UTF-8') as file:
+        file.write(deUTF8(str_data))
+
 # 替换[字符串]
 def replaceStr(str_data, str_old, str_new, re_str = None):
     if re_str:

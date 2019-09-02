@@ -92,24 +92,16 @@ class TkBase(object):
         pass
 
     def log(self, msg):
-        try:
-            msg = deUTF8(msg)
-        except Exception:
-            pass
         print(msg)
         if self._tk_txt_log:
             tkText.insertWithScrollText(self._tk_txt_log, msg + '\n')
         pass
 
     def error(self, msg):
+        msg = parseException(msg)
         # format_stack() / print_stack() / print_exc() / print_exception() / format_exception()
         self.log('___________________________________')
         self.log(format_exc())
-        try:
-            msg = enUTF8(msg)
-        except Exception as e:
-            print(e)
-            pass
         self.log('[Error] ' + msg)
         self.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         tkMessage.showMsgError(msg)
