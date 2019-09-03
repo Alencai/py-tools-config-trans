@@ -13,6 +13,7 @@ import hashlib
 
 from _base._str import *
 from _base._re import *
+from _base._log import *
 
 #-----------------------------------------------------------------
 
@@ -94,13 +95,13 @@ def getMatchName(target_dir, re_str):
 
 # 写文件
 def writeFile(str_data, file_name):
-    print('write file: %s' % file_name)
+    llog('write file: %s' % file_name)
     with io.open(file_name, mode='w+', encoding='UTF-8') as file:
         file.write(deUTF8(str_data))
 
 # 写文件
 def appendFile(str_data, file_name):
-    print('write file: %s' % file_name)
+    llog('write file: %s' % file_name)
     with io.open(file_name, mode='a+', encoding='UTF-8') as file:
         file.write(deUTF8(str_data))
 
@@ -144,10 +145,10 @@ def zipFileTo(fileName, zipName):
                 filelist.append([fileName, name[1 + len(fileName):]])
     else:
         filelist.append([os.path.dirname(fileName), os.path.basename(fileName)])
-    print("create: " + zipName)
+    llog("create: %s" % zipName)
     zf = zipfile.ZipFile(zipName, "w", zipfile.zlib.DEFLATED)
     for tar in filelist:
-        print(" - zip file: " + tar[0] + "; " +tar[1])
+        llog(" - zip file: %s; %s" % (tar[0], tar[1]))
         zf.write(os.path.join(tar[0], tar[1]), tar[1])
     zf.close()
 
@@ -166,8 +167,8 @@ def getFileMD5(fileName, isLog = True, block_size = 64*1024):
                 break
         str_md5 = md5.hexdigest()
     if isLog:
-        print(fileName)
-        print(str_md5 + " " + str(os.path.getsize(fileName)))
+        llog("file = %s" % fileName)
+        llog("md5 = %s, size = %d" % (str_md5, os.path.getsize(fileName)))
     return str_md5
 
 # 得到目录内所有md5

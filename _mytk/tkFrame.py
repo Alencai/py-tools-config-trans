@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-  
 
 from _mytk.tkHeaders import *
+import _mytk.tkMessage as tkMessage
 
 #-----------------------------------------------------------
 
@@ -48,21 +49,32 @@ def getFrameBottom(parent, height):
 # 设置一个 label + entry + button 组合的 frame
 # 1. label 最多7个中文字符  (80px)
 # 2. button 最多4个中文字符 (60px)
-def putFrameRowInput(parent, width, label_name, txtvar, btn_name=None, btn_cmd=None, btn_ext=None):
+def putFrameRowInput(parent, width, label_name, txtvar, btn_name=None, btn_cmd=None, btn_ext=None, btn_open=None):
     frame = tk.Frame(parent, width=width, height=25)
-    tk.Label(frame, text=label_name, justify=tk.LEFT).place(x=80, y=5, anchor=tk.NE)
-    tk.Entry(frame, textvariable=txtvar).place(x=85, y=5, width=width-150, anchor=tk.NW)
+    frame.pack(side=tk.TOP, ipady=5)
+    label = tk.Label(frame, text=label_name, justify=tk.LEFT)
+    label.place(x=80, y=5, anchor=tk.NE)
+    entry = tk.Entry(frame, textvariable=txtvar)
+    entry.place(x=85, y=5, width=width-150, anchor=tk.NW)
+    # entry.bind('<Button-1>', lambda e: llog('click entry'))
     if btn_name and btn_cmd:
         btn = tk.Button(frame, text=btn_name, command=lambda:btn_cmd(txtvar.get(), btn_ext))
         btn.place(x=width, y=0, width=60, anchor=tk.NE)
-    frame.pack(side=tk.TOP, ipady=5)
+    if btn_open:
+        btn = None
+        btn = tk.Button(frame, text='...', bg='#f7ffff')
+        btn.place(x=width-65, y=0, width=20, anchor=tk.NE)
+        if btn_open == BTN_FILE:
+            btn.configure(command=lambda:tkMessage.showAskOpenFile(txtvar, txtvar.get()))
+        if btn_open == BTN_DIR:
+            btn.configure(command=lambda:tkMessage.showAskOpenDir(txtvar, txtvar.get()))
     return frame
 
 # 设置一个 listbox
 def putFrameRowCombobox(parent, width, label_name, txtvar, values):
     frame = tk.Frame(parent, width=width, height=25)
     tk.Label(frame, text=label_name, justify=tk.LEFT).place(x=80, y=5, anchor=tk.NE)
-    cb = ttk.Combobox(frame, width=width - 150, values=values, textvariable=txtvar, state='readonly')
+    cb = ttk.Combobox(frame, width=width-150, values=values, textvariable=txtvar, state='readonly')
     cb.place(x=85, y=5, width=width-150, anchor=tk.NW)
     cb.current(1)
     frame.pack(side=tk.TOP, ipady=5)

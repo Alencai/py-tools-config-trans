@@ -8,6 +8,7 @@ import json
 
 from _base._static import *
 from _base._str import *
+from _base._log import *
 
 # -------------------------------------------------
 
@@ -99,17 +100,17 @@ class MyParserIni(ConfigParser):
     
     def dumpIni(self):
         for secname in self.sections():
-            print("[" + secname + "]")
+            llog("[%s]" % secname)
             for option in self.options(secname):
-                print("   " + option + " = " + self.get(secname, option))
+                llog("    %s = %s" % (option, self.get(secname, option)))
             # for item in self.items(secname):
-            #     print(item)
+            #     llog(item)
         pass
     
     def dumpJson(self):
         ret_json = self.toJson()
         ret_str = json.dumps(ret_json, sort_keys=False, indent=4)
-        print(ret_str)
+        llog(ret_str)
         pass
 
 

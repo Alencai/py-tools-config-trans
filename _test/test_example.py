@@ -18,12 +18,12 @@ from _base import *
 # # 示例： xml配置表
 # parser = xml.MyParserXml()
 # parser.parseSettingXml("./../example/xmls/setting.xml")
-# parser.exportFiles('./../example/xmls', "./../.out/xmls")
+# parser.exportFiles('./../example/xmls', "./../.out/xmls", 'json')
 
 # # 示例： excel配置表
 # parser = excel.MyParserExcel()
 # parser.parseSettingXml("./../example/excels/setting.xml")
-# parser.exportFiles('./../example/excels', "./../.out/excels")
+# parser.exportFiles('./../example/excels', "./../.out/excels", 'json')
 
 # # 示例： 移除后缀文件
 # removeWithSuffix("./../.out/excels", "json")

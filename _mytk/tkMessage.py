@@ -3,6 +3,10 @@
 
 from _mytk.tkHeaders import *
 
+# filename = filedialog.askopenfilename()
+# filename = filedialog.asksaveasfilename()
+# dirname = filedialog.askdirectory()
+
 #-----------------------------------------------------------
 
 def testMessage(parent):
@@ -15,6 +19,9 @@ def testMessage(parent):
     tk.Button(parent, text="question", command=lambda:print_ret(showAskQues, 'question')).pack()
     tk.Button(parent, text="ask YesNo", command=lambda:print_ret(showAskYesNo, 'ask YesNo')).pack()
     tk.Button(parent, text="ask OkCancel", command=lambda:print_ret(showAskOkCancel, 'ask OkCancel')).pack()
+    tk.Button(parent, text="ask OpenFile", command=lambda:print_ret(showAskOpenFile, 'ask open file')).pack()
+    tk.Button(parent, text="ask SaveFile", command=lambda:print_ret(showAskSaveFile, 'ask save file')).pack()
+    tk.Button(parent, text="ask OpenDir", command=lambda:print_ret(showAskOpenDir, 'ask open dir')).pack()
 
 #-----------------------------------------------------------
 
@@ -41,6 +48,32 @@ def showAskYesNo(msg, title='ask'):
 # return <bool> True / False
 def showAskOkCancel(msg, title='ask'):
     return tkMessageBox.askokcancel(title=title, message=msg)
+
+# return file_path
+def showAskOpenFile(txtvar=None, initfile=None, title='open file'):
+    initfile = initfile and os.path.abspath(initfile) or ''
+    print(initfile)
+    value = tkdlg.askopenfilename(title=title, initialfile=initfile)
+    if value and txtvar:
+        txtvar.set(value)
+    return value
+
+# return file_path
+def showAskSaveFile(txtvar=None, initdir=None, title='save file'):
+    initdir = initdir and os.path.abspath(initdir) or ''
+    value = tkdlg.asksaveasfilename(title=title, initialdir=initdir)
+    if value and txtvar:
+        txtvar.set(value)
+    return value
+
+# return dir_path
+def showAskOpenDir(txtvar=None, initdir=None, title='open dir'):
+    initdir = initdir and os.path.abspath(initdir) or ''
+    value = tkdlg.askdirectory(title=title, initialdir=initdir)
+    if value and txtvar:
+        txtvar.set(value)
+    return value
+
 
 
 

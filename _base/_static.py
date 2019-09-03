@@ -10,5 +10,8 @@ IS_WIN32 = (sys.platform == "win32")
 IS_MAC = (sys.platform == "darwin")
 
 
+BTN_FILE = 'file'
+BTN_DIR  = 'dir'
 
+TYPE_JSON = 'json'
 

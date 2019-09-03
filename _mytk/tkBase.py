@@ -103,7 +103,7 @@ class TkBase(object):
         self.log('___________________________________')
         self.log(format_exc())
         self.log('[Error] ' + msg)
-        self.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        self.log('---------------------------------<<')
         tkMessage.showMsgError(msg)
         pass
 

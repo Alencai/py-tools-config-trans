@@ -1,7 +1,7 @@
 ﻿#! /usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import os, sys
+import io, os, sys
 import random
 
 from _base._static import IS_WIN32, IS_PY2, IS_PY3

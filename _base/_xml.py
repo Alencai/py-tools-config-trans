@@ -11,6 +11,7 @@ from _base._funcs import *
 from _base._str import *
 from _base._re import *
 from _base._file import *
+from _base._static import *
 
 # -------------------------------------------------
 
@@ -138,18 +139,31 @@ class MyParserXml:
         # print(self.__settings)
     
     # 导出配置到文件
-    def exportFiles(self, in_dir, out_dir):
+    def exportFiles(self, in_dir, out_dir, out_type):
+        llog('\n-------------------------------------------------------<<<<')
+        llog('Begin Export Xml Files: ')
         reloadSys()
         createDir(out_dir)
         for setting in self.__settings:
             file_name = os.path.join(in_dir, setting[KEY_PATH])
             json_file = setting[KEY_JSONNAME]
-            xml_dom = xml.dom.minidom.parse(file_name)
-            assert xml_dom, ('error: can not find file: %s' % (file_name))
-            ele_root = xml_dom.documentElement
-            if json_file:  # 导出json
-                write_path = os.path.join(out_dir, json_file + '.json')
-                json_str = self._exportJsonStr(ele_root, setting)
+            llog('________')
+            llog('From file: %s' % file_name)
+            try:
+                xml_dom = xml.dom.minidom.parse(file_name)
+                assert xml_dom, ('Error: can not find file: %s' % (file_name))
+                ele_root = xml_dom.documentElement
+                assert ele_root, ('Error: can not find root element')
+                write_path, json_str = None, None
+                if out_type == TYPE_JSON and json_file:
+                    write_path = os.path.join(out_dir, json_file + '.json')
+                    json_str = self._exportJsonStr(ele_root, setting)
+                assert json_str, 'Error: Can not find json str'
                 writeFile(json_str, write_path)
+            except Exception as e:
+                lerr(e)
+        llog('\nEnd Export.')
+        pass
+
 
 

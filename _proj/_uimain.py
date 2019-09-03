@@ -107,14 +107,15 @@ class MainExport(MainInputVar):
     # -------------------------------------------------
     def _exportFile(self, out_type):
         if not self._checkInputs():
-            return
+            return False
         parser = self._getExportParser(self._txtvar_type.get())
         if parser:
-            # todo out_type
             parser.parseSettingXml(self._txtvar_setting.get())
-            parser.exportFiles(self._txtvar_pathin.get(), self._txtvar_pathout.get())
-            pass
-        pass
+            parser.exportFiles(self._txtvar_pathin.get(), self._txtvar_pathout.get(), out_type)
+            tkMessage.showMsgInfo('导出成功！详情查看日志')
+            return True
+        tkMessage.showMsgError('导出失败！解析器构建失败')
+        return False
 
 # ---------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
@@ -125,6 +126,8 @@ class MainUI(MainExport):
     # -------------------------------------------------
     def __init__(self, *args, **kwargs):
         super(MainUI, self).__init__(*args, **kwargs)
+        setllog(self.log)
+        setlerr(self.error)
         self._renderUI(900, 600, 260, 400)
         self.log(deUTF8('初始化成功！'))
         pass
@@ -145,9 +148,9 @@ class MainUI(MainExport):
         tkFrame.putFrameRowInput(frm_br_, row_br_, '选项', self._txtvar_key)
         tkFrame.putFrameRowInput(frm_br_, row_br_, '项目描述', self._txtvar_name)
         tkFrame.putFrameRowCombobox(frm_br_, row_br_, '输入类型', self._txtvar_type, ('excel', 'xml'))
-        tkFrame.putFrameRowInput(frm_br_, row_br_, '项目配置文件', self._txtvar_setting, '打开', self._onEvtOpenDir, True)
-        tkFrame.putFrameRowInput(frm_br_, row_br_, '输入目录', self._txtvar_pathin, '打开', self._onEvtOpenDir, False)
-        tkFrame.putFrameRowInput(frm_br_, row_br_, '输出目录', self._txtvar_pathout, '打开', self._onEvtOpenDir, False)
+        tkFrame.putFrameRowInput(frm_br_, row_br_, '项目配置文件', self._txtvar_setting, '打开', self._onEvtOpenDir, True, BTN_FILE)
+        tkFrame.putFrameRowInput(frm_br_, row_br_, '输入目录', self._txtvar_pathin, '打开', self._onEvtOpenDir, False, BTN_DIR)
+        tkFrame.putFrameRowInput(frm_br_, row_br_, '输出目录', self._txtvar_pathout, '打开', self._onEvtOpenDir, False, BTN_DIR)
         tkFrame.putFrameRowLine(frm_br_, row_br_)
         tkFrame.putFrameRowBtns(frm_br_, ['添加', self._onEvtAdd], ['删除', self._onEvtDel], ['保存', self._onEvtSave])
         tkFrame.putFrameRowLine(frm_br_, row_br_)
@@ -172,7 +175,7 @@ class MainUI(MainExport):
         self._tk_listbox.insert(tk.END, key)
         pass
     def insertListKeys(self, keys):
-        print(keys)
+        keys.sort()
         for key in keys:
             self._tk_listbox.insert(tk.END, key)
         pass
@@ -194,12 +197,13 @@ class MainUI(MainExport):
         pass
     def refreshList(self):
         self.clearList()
-        self.insertListKeys(self._ini_json.keys())
+        self.insertListKeys(list(self._ini_json.keys()))
         self.selectListIdx(0)
         pass
 
     # -------------------------------------------------
     # events
+    
     def _onEvtListBox(self, idx, key):
         try:
             self._showVars(key, self._ini_json[key])
@@ -207,10 +211,7 @@ class MainUI(MainExport):
             self.error(e)
         pass
     def _onEvtRootDir(self):
-        try:
-            self._onEvtOpenDir('.', False)
-        except Exception as e:
-            self.error(e)
+        self._onEvtOpenDir('.', False)
         pass
     def _onEvtRefresh(self):
         try:
@@ -231,7 +232,6 @@ class MainUI(MainExport):
                 value = os.path.dirname(value)
             if self._checkDir(value):
                 excSys('start "" %s' % (value))
-            pass
         except Exception as e:
             self.error(e)
         pass
@@ -277,7 +277,7 @@ class MainUI(MainExport):
         pass
     def _onEvtExportJson(self):
         try:
-            self._exportFile('json')
+            self._exportFile(TYPE_JSON)
         except Exception as e:
             self.error(e)
         pass

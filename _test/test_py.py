@@ -112,14 +112,5 @@ print(type(test1), type(lambda:1))
 print('>>-----------------------------------------------')
 
 
-def print_str(txt):
-    print(txt, type(txt))
-    appendFile(txt, 'abc.txt')
-txt = "1.用户\n2.用户\n3.用户"
 
-txt2 = 'hello world'
-print_str(txt2)
-txt2 = enUTF8(txt2)
-print_str(txt2)
-txt2 = deUTF8(txt2)
-print_str(txt2)
+

@@ -12,6 +12,7 @@ from _base._funcs import *
 from _base._str import *
 from _base._re import *
 from _base._file import *
+from _base._static import *
 
 # -------------------------------------------------
 
@@ -116,7 +117,9 @@ class MyParserExcel:
             self.__settings.append(item)
 
     # 导出配置到文件
-    def exportFiles(self, in_dir, out_dir):
+    def exportFiles(self, in_dir, out_dir, out_type):
+        llog('\n-------------------------------------------------------<<<<')
+        llog('Begin Export Excel Files: ')
         reloadSys()
         createDir(out_dir)
         for setting in self.__settings:
@@ -124,14 +127,26 @@ class MyParserExcel:
             sheet_name = setting[KEY_SHEETNAME]
             json_file = setting[KEY_JSONNAME]
             fields = setting[KEY_FIELDS]
-            data = xlrd.open_workbook(file_name)
-            assert data, ('Error: can not find file: %s' % (file_name))
-            table = data.sheet_by_name(sheet_name)
-            assert table, ('Error: can not find sheetname: %s' % (sheet_name))
-            self._matchSettingFields(table, fields)
-            if json_file:  # 导出json
-                write_path = os.path.join(out_dir, json_file + '.json')
-                json_str = self._exportJsonStr(table, fields)
+            llog('________')
+            llog('From file: %s' % file_name)
+            try:
+                data = xlrd.open_workbook(file_name)
+                assert data, ('Error: can not find file: %s' % (file_name))
+                table = data.sheet_by_name(sheet_name)
+                assert table, ('Error: can not find sheetname: %s' % (sheet_name))
+                self._matchSettingFields(table, fields)
+                write_path, json_str = None, None
+                if out_type == TYPE_JSON and json_file:
+                    write_path = os.path.join(out_dir, json_file + '.json')
+                    json_str = self._exportJsonStr(table, fields)
+                assert json_str, 'Error: Can not find json str'
                 writeFile(json_str, write_path)
+            except Exception as e:
+                lerr(e)
+        llog('\nEnd Export.')
+        pass
+
+
+
 
 
