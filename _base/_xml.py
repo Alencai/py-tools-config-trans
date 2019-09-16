@@ -19,6 +19,7 @@ KEY_PATH_IN = 'path_in'
 KEY_PATH_OUT = 'path_out'
 KEY_AUTONUMBER = 'autonumber'
 KEY_ISDIR = 'isdir'
+KEY_HASH_IGNORE = 'ignore'
 KEY_HASH_NUMBER = 'number'
 KEY_HASH_STRING = 'string'
 KEY_HASH_ARRAY = 'array'
@@ -32,8 +33,7 @@ class MyParserXml:
     __settings = []
     
     # 转化属性类型
-    def _transAttrValue(self, value, setting, attr_name, pre_name):
-        full_name = pre_name + (attr_name and ('.' + attr_name) or '')
+    def _transAttrValue(self, value, setting, full_name):
         to_number = (full_name in setting[KEY_HASH_NUMBER])
         to_string = (full_name in setting[KEY_HASH_STRING])
         if to_number or (setting[KEY_AUTONUMBER] and not to_string):
@@ -69,12 +69,6 @@ class MyParserXml:
             if key_value:
                 ret_json[key_value] = self._getJsonXmlNode(child_node, setting, full_name)
         return ret_json
-    
-    # 设置节点的json的属性值
-    def _setJsonXmlAttrs(self, node, setting, ret_json, pre_name):
-        for key in node.attributes.keys():
-            value = node.getAttribute(key)
-            ret_json[key] = self._transAttrValue(value, setting, key, pre_name)
 
     # 设置节点的json的标签值
     def _getJsonXmlChild(self, node, child_node, node_name, setting, pre_name):
@@ -85,6 +79,16 @@ class MyParserXml:
         if full_name in setting[KEY_HASH_ARRAY]:
             return self._getJsonXmlArray(node, node_name, setting, full_name)
         return self._getJsonXmlNode(child_node, setting, full_name)
+    
+    # 设置节点的json的属性值
+    def _setJsonXmlAttrs(self, node, setting, ret_json, pre_name):
+        for key in node.attributes.keys():
+            full_name = pre_name + '.' + key
+            if full_name in setting[KEY_HASH_IGNORE]:
+                continue
+            value = node.getAttribute(key)
+            ret_json[key] = self._transAttrValue(value, setting, full_name)
+        pass
     
     # 获取节点的json
     def _getJsonXmlNode(self, node, setting, pre_name):
@@ -97,12 +101,15 @@ class MyParserXml:
             if child_node.nodeType == 3:
                 if len(node.childNodes) == 1 and len(ret_json.keys()) == 0:
                     value = (child_node.nodeValue or "").strip(' \n\r\t\b')
-                    return self._transAttrValue(value, setting, None, pre_name)
+                    return self._transAttrValue(value, setting, pre_name)
             if child_node.nodeType == 1:
                 node_name = child_node.nodeName
                 if node_name in hash_nodes:
                     continue
                 hash_nodes[node_name] = True
+                full_name = pre_name + '.' + node_name
+                if full_name in setting[KEY_HASH_IGNORE]:
+                    continue
                 ret_json[node_name] = self._getJsonXmlChild(node, child_node, node_name, setting, pre_name)
         return ret_json
     
@@ -168,6 +175,7 @@ class MyParserXml:
             item[KEY_PATH_OUT] = setting.getAttribute(KEY_PATH_OUT)
             item[KEY_AUTONUMBER] = (setting.getAttribute(KEY_AUTONUMBER) == '1')
             item[KEY_ISDIR] = (setting.getAttribute(KEY_ISDIR) == '1')
+            item[KEY_HASH_IGNORE] = self._getHashValues(setting, KEY_HASH_IGNORE)
             item[KEY_HASH_NUMBER] = self._getHashValues(setting, KEY_HASH_NUMBER)
             item[KEY_HASH_STRING] = self._getHashValues(setting, KEY_HASH_STRING)
             item[KEY_HASH_ARRAY] = self._getHashValues(setting, KEY_HASH_ARRAY)
