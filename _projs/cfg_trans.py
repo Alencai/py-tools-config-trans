@@ -9,7 +9,7 @@ from _base import *
 
 class MainParsor(TkBase):
     _ini_parser = None  # ini - 解析类
-    _ini_json = None    # ini - json数据
+    _ini_json = None  # ini - json数据
     # -------------------------------------------------
     def __init__(self, *args, **kwargs):
         super(MainParsor, self).__init__(*args, **kwargs)
@@ -21,15 +21,16 @@ class MainParsor(TkBase):
         self._ini_parser.save(self._ini_json)
         pass
     def _getExportParser(self, proj_type):
-        if proj_type == 'excel':
+        if proj_type == TYPE_EXCEL:
             return excel.MyParserExcel()
-        if proj_type == 'xml':
+        if proj_type == TYPE_XML:
             return xml.MyParserXml()
         return None
     # --------------------------------------------
     def parseIni(self, ini_path):
-        self._ini_parser.read(ini_path)
-        self._ini_json = self._ini_parser.toJson()
+        if os.path.exists(ini_path):
+            self._ini_parser.read(ini_path)
+            self._ini_json = self._ini_parser.toJson()
         pass
     def reloadIni(self):
         self._ini_parser.reload()
@@ -147,7 +148,7 @@ class MainUI(MainExport):
         self._tk_listbox = tkListbox.putScrollListbox(frm_bl_, self._onEvtListBox)
         tkFrame.putFrameRowInput(frm_br_, row_br_, '选项', self._txtvar_key)
         tkFrame.putFrameRowInput(frm_br_, row_br_, '项目描述', self._txtvar_name)
-        tkFrame.putFrameRowCombobox(frm_br_, row_br_, '输入类型', self._txtvar_type, ('excel', 'xml'))
+        tkFrame.putFrameRowCombobox(frm_br_, row_br_, '输入类型', self._txtvar_type, (TYPE_EXCEL, TYPE_XML))
         tkFrame.putFrameRowInput(frm_br_, row_br_, '项目配置文件', self._txtvar_setting, '打开', self._onEvtOpenDir, True, BTN_FILE)
         tkFrame.putFrameRowInput(frm_br_, row_br_, '输入目录', self._txtvar_pathin, '打开', self._onEvtOpenDir, False, BTN_DIR)
         tkFrame.putFrameRowInput(frm_br_, row_br_, '输出目录', self._txtvar_pathout, '打开', self._onEvtOpenDir, False, BTN_DIR)
@@ -158,6 +159,7 @@ class MainUI(MainExport):
         tkMenu.setMenuTopCmds(self._window, [
             ['文件', [
                 ['刷新列表', self._onEvtRefresh],
+                ['清空日志', self._onEvtClearLog],
                 ['打开根目录', self._onEvtRootDir],
             ]],
             ['帮助', [
@@ -219,6 +221,9 @@ class MainUI(MainExport):
             self.refreshList()
         except Exception as e:
             self.error(e)
+        pass
+    def _onEvtClearLog(self):
+        self.clearLog()
         pass
     def _onEvtAbout(self):
         try:

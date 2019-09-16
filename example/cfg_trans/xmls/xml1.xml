@@ -1,0 +1,28 @@
+<root>
+    <person>
+        <man id="1001" weight="1.1" name="小明"/>
+        <man id="1002" weight="1.2" name="大张"/>
+    </person>
+    <animal>
+        <pet>
+            <cat id="1001" name="猫1"/>
+            <cat id="1002" name="猫2"/>
+        </pet>
+        <pet>
+            <cat id="1001" name="猫3"/>
+            <cat id="1002" name="猫4"/>
+        </pet>
+    </animal>
+    <trans>
+        <car id="1001" name="奔驰"/>
+        <car id="1002" name="宝马"/>
+    </trans>
+    <!-- values  -->
+    <value1>描述1</value1>
+    <value2/>
+    <value3 int="100" float="100.01"/>
+    <value4>10007</value4>
+    <value5>10008</value5>
+</root>
+
+

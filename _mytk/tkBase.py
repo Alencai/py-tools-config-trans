@@ -107,4 +107,10 @@ class TkBase(object):
         tkMessage.showMsgError(msg)
         pass
 
+    def clearLog(self):
+        tkText.clearWithScrollText(self._tk_txt_log)
+        self.log('clear done!')
+        pass
+
+
 

@@ -1,6 +1,8 @@
 ﻿
 import re
 
+re_suffix_name = "^.+\.(.+)$"
+
 # --------------------------------------------------------------------
 
 def getDigit(str):
@@ -27,10 +29,14 @@ def getExcelDouble(str):
         return "0"
     return getDouble(str)
 
-# 获取后缀匹配字符串（比如*.json）
-def getWithSuffix(name, suffix):
-    ret = re.search('^(.*\.' + suffix + ')$', name)
+# 获取文件名的后缀
+def getSuffix(name):
+    ret = re.search(re_suffix_name, name)
     return ret and ret.group(1) or None
+
+# 判断文件名的后缀（如: json）
+def checkSuffix(name, suffix):
+    return getSuffix(name) == suffix
 
 
 

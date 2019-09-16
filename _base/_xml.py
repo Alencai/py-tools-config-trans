@@ -15,13 +15,14 @@ from _base._static import *
 
 # -------------------------------------------------
 
-KEY_PATH = 'path'
-KEY_JSONNAME = 'jsonname'
+KEY_PATH_IN = 'path_in'
+KEY_PATH_OUT = 'path_out'
 KEY_AUTONUMBER = 'autonumber'
-KEY_HASH_NUMBER = 'hashNumber'
-KEY_HASH_STRING = 'hashString'
-KEY_HASH_ARRAY = 'hashArray'
-KEY_HASH_DICTS = 'hashDicts'
+KEY_ISDIR = 'isdir'
+KEY_HASH_NUMBER = 'number'
+KEY_HASH_STRING = 'string'
+KEY_HASH_ARRAY = 'array'
+KEY_HASH_DICTS = 'dict'
 
 str_indent = '    '
 
@@ -35,7 +36,7 @@ class MyParserXml:
         full_name = pre_name + (attr_name and ('.' + attr_name) or '')
         to_number = (full_name in setting[KEY_HASH_NUMBER])
         to_string = (full_name in setting[KEY_HASH_STRING])
-        if to_number or (setting[KEY_AUTONUMBER] == '1' and not to_string):
+        if to_number or (setting[KEY_AUTONUMBER] and not to_string):
             if getInt(value):
                 value = int(value)
             elif getDouble(value):
@@ -113,12 +114,49 @@ class MyParserXml:
         ret_str = json.dumps(ret_json, sort_keys = True, indent = 4) # encoding = 'utf-8'
         return deUnicode(ret_str)
 
+    # 导出单个文件
+    def _exportEachFile(self, setting, file_in, file_out, in_dir, out_dir, out_type):
+        llog('________')
+        llog('From file: %s' % file_in)
+        try:
+            xml_dom = xml.dom.minidom.parse(file_in)
+            assert xml_dom, ('Error: can not find file: %s' % (file_in))
+            ele_root = xml_dom.documentElement
+            assert ele_root, ('Error: can not find root element')
+            write_path, json_str = None, None
+            if out_type == TYPE_JSON and file_out:
+                write_path = os.path.join(out_dir, file_out + '.json')
+                json_str = self._exportJsonStr(ele_root, setting)
+            assert json_str, 'Error: Can not find json str'
+            writeFile(json_str, write_path)
+        except Exception as e:
+            lerr(e)
+        pass
+    
+    # 导出整个文件夹
+    def _exportDirFile(self, setting, file_in, file_out, in_dir, out_dir, out_type):
+        search_dir = os.path.abspath(os.path.join(in_dir, file_in))
+        out_dir = os.path.abspath(os.path.join(out_dir, file_out))
+        if os.path.isdir(search_dir):
+            for root, dirs, files in os.walk(search_dir, topdown=True):
+                for dir in dirs:
+                    createDir(os.path.join(out_dir, dir))
+                for name in files:
+                    file_in = os.path.join(root, name)
+                    file_out = os.path.join(root.replace(search_dir, out_dir), removeSuffix(name))
+                    self._exportEachFile(setting, file_in, file_out, in_dir, out_dir, out_type)
+        pass
+
     #-----------------------------------------------------------------------------------
     
-    # 读取excel字段配置表
-    # <table path="xml1.xml" sheetname="Sheet1" jsonname="excel1">
-    # 	<field name="id" map="id" type="int"/>
-    # 	<field name="name" map="name" type="string"/>
+    # 读取xml字段配置表
+    # <table path_in="dir_in" path_out="dir_out" autonumber="1" isdir="1">
+    #     <number> person.man.id </number>
+    #     <string> person.man.name </string>
+    # </table>
+    # <table path_in="xml1.xml" path_out="excel1" autonumber="1" isdir="1">
+    #     <array> animal.pet </array>
+    #     <dict key="id"> animal.pet.cat </dict>
     # </table>
     def parseSettingXml(self, file_name):
         self.__settings = []
@@ -128,16 +166,18 @@ class MyParserXml:
         ele_sets = ele_root.getElementsByTagName('table')
         for setting in ele_sets:
             item = {}
-            item[KEY_PATH] = setting.getAttribute('path')
-            item[KEY_JSONNAME] = setting.getAttribute('jsonname')
-            item[KEY_AUTONUMBER] = setting.getAttribute('autonumber')
-            item[KEY_HASH_NUMBER] = self._getHashValues(setting, 'number')
-            item[KEY_HASH_STRING] = self._getHashValues(setting, 'string')
-            item[KEY_HASH_ARRAY] = self._getHashValues(setting, 'array')
-            item[KEY_HASH_DICTS] = self._getHashValues(setting, 'dict', 'key')
+            item[KEY_PATH_IN] = setting.getAttribute(KEY_PATH_IN)
+            item[KEY_PATH_OUT] = setting.getAttribute(KEY_PATH_OUT)
+            item[KEY_AUTONUMBER] = (setting.getAttribute(KEY_AUTONUMBER) == '1')
+            item[KEY_ISDIR] = (setting.getAttribute(KEY_ISDIR) == '1')
+            item[KEY_HASH_NUMBER] = self._getHashValues(setting, KEY_HASH_NUMBER)
+            item[KEY_HASH_STRING] = self._getHashValues(setting, KEY_HASH_STRING)
+            item[KEY_HASH_ARRAY] = self._getHashValues(setting, KEY_HASH_ARRAY)
+            item[KEY_HASH_DICTS] = self._getHashValues(setting, KEY_HASH_DICTS, 'key')
             self.__settings.append(item)
         # print(self.__settings)
-    
+        pass
+
     # 导出配置到文件
     def exportFiles(self, in_dir, out_dir, out_type):
         llog('\n-------------------------------------------------------<<<<')
@@ -145,23 +185,15 @@ class MyParserXml:
         reloadSys()
         createDir(out_dir)
         for setting in self.__settings:
-            file_name = os.path.join(in_dir, setting[KEY_PATH])
-            json_file = setting[KEY_JSONNAME]
-            llog('________')
-            llog('From file: %s' % file_name)
-            try:
-                xml_dom = xml.dom.minidom.parse(file_name)
-                assert xml_dom, ('Error: can not find file: %s' % (file_name))
-                ele_root = xml_dom.documentElement
-                assert ele_root, ('Error: can not find root element')
-                write_path, json_str = None, None
-                if out_type == TYPE_JSON and json_file:
-                    write_path = os.path.join(out_dir, json_file + '.json')
-                    json_str = self._exportJsonStr(ele_root, setting)
-                assert json_str, 'Error: Can not find json str'
-                writeFile(json_str, write_path)
-            except Exception as e:
-                lerr(e)
+            is_dir = setting[KEY_ISDIR]
+            file_in = setting[KEY_PATH_IN]
+            file_out = setting[KEY_PATH_OUT]
+            if is_dir:
+                self._exportDirFile(setting, file_in, file_out, in_dir, out_dir, out_type)
+                continue
+            file_in = os.path.abspath(os.path.join(in_dir, file_in))
+            file_out = os.path.abspath(file_out)
+            self._exportEachFile(setting, file_in, file_out, in_dir, out_dir, out_type)
         llog('\nEnd Export.')
         pass
 

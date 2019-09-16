@@ -16,10 +16,10 @@ from _base._static import *
 
 # -------------------------------------------------
 
-KEY_PATH = 'path'
+KEY_PATH_IN = 'path_in'
+KEY_PATH_OUT = 'path_out'
 KEY_SHEETNAME = 'sheetname'
-KEY_JSONNAME = 'jsonname'
-KEY_FIELDS = 'fields'
+KEY_FIELDS = 'field'
 KEY_FIELD_NAME = 'name'
 KEY_FIELD_TYPE = 'type'
 KEY_FIELD_MAP = 'map'
@@ -36,7 +36,6 @@ class MyParserExcel:
         for field in fields:
             field_type = field[KEY_FIELD_TYPE]
             field_map = field[KEY_FIELD_MAP]
-            field[KEY_FIELD_COL] = None
             for col in range(ncols):
                 col_type = table.cell(0, col).value
                 col_map = table.cell(1, col).value
@@ -103,16 +102,17 @@ class MyParserExcel:
         ele_sets = ele_root.getElementsByTagName('table')
         for setting in ele_sets:
             item = {}
-            item[KEY_PATH] = setting.getAttribute('path')
-            item[KEY_SHEETNAME] = setting.getAttribute('sheetname')
-            item[KEY_JSONNAME] = setting.getAttribute('jsonname')
+            item[KEY_PATH_IN] = setting.getAttribute(KEY_PATH_IN)
+            item[KEY_PATH_OUT] = setting.getAttribute(KEY_PATH_OUT)
+            item[KEY_SHEETNAME] = setting.getAttribute(KEY_SHEETNAME)
             item[KEY_FIELDS] = []
-            fields = setting.getElementsByTagName('field')
+            fields = setting.getElementsByTagName(KEY_FIELDS)
             for field in fields:
                 sub_item = {}
-                sub_item[KEY_FIELD_NAME] = field.getAttribute('name')
-                sub_item[KEY_FIELD_TYPE] = field.getAttribute('type')
-                sub_item[KEY_FIELD_MAP] = field.getAttribute('map')
+                sub_item[KEY_FIELD_NAME] = field.getAttribute(KEY_FIELD_NAME)
+                sub_item[KEY_FIELD_TYPE] = field.getAttribute(KEY_FIELD_TYPE)
+                sub_item[KEY_FIELD_MAP] = field.getAttribute(KEY_FIELD_MAP)
+                sub_item[KEY_FIELD_COL] = None
                 item[KEY_FIELDS].append(sub_item)
             self.__settings.append(item)
 
@@ -123,9 +123,9 @@ class MyParserExcel:
         reloadSys()
         createDir(out_dir)
         for setting in self.__settings:
-            file_name = os.path.join(in_dir, setting[KEY_PATH])
+            file_name = os.path.join(in_dir, setting[KEY_PATH_IN])
             sheet_name = setting[KEY_SHEETNAME]
-            json_file = setting[KEY_JSONNAME]
+            json_file = setting[KEY_PATH_OUT]
             fields = setting[KEY_FIELDS]
             llog('________')
             llog('From file: %s' % file_name)

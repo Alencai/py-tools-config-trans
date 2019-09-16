@@ -1,0 +1,9 @@
+<root>
+    <animal>
+        <pet>
+            <cat id="1001" name="猫1"/>
+        </pet>
+    </animal>
+</root>
+
+

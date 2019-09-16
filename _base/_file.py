@@ -105,7 +105,7 @@ def appendFile(str_data, file_name):
     with io.open(file_name, mode='a+', encoding='UTF-8') as file:
         file.write(deUTF8(str_data))
 
-# 替换[字符串]
+# 替换[字符串]（替换所有符合的字符串）
 def replaceStr(str_data, str_old, str_new, re_str = None):
     if re_str:
         # rets = re.findall(re_str, str_data)
@@ -113,9 +113,24 @@ def replaceStr(str_data, str_old, str_new, re_str = None):
         #     str_old = rtuple[0]
         re_match = re.compile(re_str)
         str_data = re_match.sub(str_new, str_data)
+        # str_data = re.sub(re_str, str_new, str_data)
     else:
         str_data = str_data.replace(str_old, str_new)
     return str_data
+
+# 替换文件名后缀
+def replaceSuffix(txt, snew):
+    names = txt.split('.')
+    if len(names) > 0:
+        names[-1] = snew
+    return '.'.join(names)
+
+# 删除文件名后缀
+def removeSuffix(txt):
+    names = txt.split('.')
+    if len(names) > 0:
+        names.pop(-1)
+    return '.'.join(names)
 
 # 替换[文件文本]的[字符串]
 def replaceFileStr(file_name, str_old, str_new, re_str = None):
@@ -193,9 +208,8 @@ def getDirMd5(dir):
 def removeWithSuffix(dir, suffix):
     for root, dirs, files in os.walk(dir): 
         for file in files:
-            if getWithSuffix(file, suffix):
+            if checkSuffix(file, suffix):
                 os.remove(os.path.join(root, file))
-
 
 
 

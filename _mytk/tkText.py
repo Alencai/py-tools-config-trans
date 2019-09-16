@@ -62,6 +62,13 @@ def insertWithScrollText(node, data):
     node.yview_moveto(1)
     pass
 
+# 1.2 清空不可编辑的文本
+def clearWithScrollText(node):
+    node.config(state=tk.NORMAL)
+    node.delete("0.0", tk.END)
+    node.config(state=tk.DISABLED)
+    pass
+
 
 
 

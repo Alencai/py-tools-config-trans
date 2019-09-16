@@ -1,7 +1,6 @@
 *.pyc
 *.spec
 .out/
-.tmp/
 .vs/
 __pycache__
 /dist/
