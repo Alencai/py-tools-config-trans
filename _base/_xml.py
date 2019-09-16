@@ -139,8 +139,6 @@ class MyParserXml:
         out_dir = os.path.abspath(os.path.join(out_dir, file_out))
         if os.path.isdir(search_dir):
             for root, dirs, files in os.walk(search_dir, topdown=True):
-                for dir in dirs:
-                    createDir(os.path.join(out_dir, dir))
                 for name in files:
                     file_in = os.path.join(root, name)
                     file_out = os.path.join(root.replace(search_dir, out_dir), removeSuffix(name))
@@ -192,7 +190,7 @@ class MyParserXml:
                 self._exportDirFile(setting, file_in, file_out, in_dir, out_dir, out_type)
                 continue
             file_in = os.path.abspath(os.path.join(in_dir, file_in))
-            file_out = os.path.abspath(file_out)
+            file_out = os.path.abspath(os.path.join(out_dir, file_out))
             self._exportEachFile(setting, file_in, file_out, in_dir, out_dir, out_type)
         llog('\nEnd Export.')
         pass
