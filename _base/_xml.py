@@ -110,8 +110,7 @@ class MyParserXml:
         self._setJsonXmlAttrs(node, setting, ret_json, pre_name)
         if pre_name in setting[KEY_HASH_TUPLE]:
             str_name = setting[KEY_HASH_TUPLE][pre_name]
-            if type(str_name) == str:
-                ret_json[str_name] = self._getJsonXmlTuple(node, setting, pre_name)
+            ret_json[str_name] = self._getJsonXmlTuple(node, setting, pre_name)
             return ret_json
         hash_nodes = {}
         for child_node in node.childNodes:
