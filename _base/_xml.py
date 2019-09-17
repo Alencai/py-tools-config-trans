@@ -27,11 +27,10 @@ KEY_HASH_ARRAY = 'array'
 KEY_HASH_DICTS = 'dict'
 KEY_HASH_TUPLE = 'tuple'
 
-str_indent = '    '
-
 # -------------------------------------------------
 
 class MyParserXml:
+    __export_mode = MODE_NORMAL
     __settings = []
     
     # 转化属性类型
@@ -137,7 +136,11 @@ class MyParserXml:
     def _exportJsonStr(self, ele_root, setting):
         name_root = ele_root.nodeName
         ret_json = self._getJsonXmlNode(ele_root, setting, name_root)
-        ret_str = json.dumps(ret_json, sort_keys = True, indent = 4) # encoding = 'utf-8'
+        ret_str = ''
+        if MODE_NORMAL == self.__export_mode:  # encoding = 'utf-8'
+            ret_str = json.dumps(ret_json, sort_keys = True, indent = 4)
+        if MODE_SINGLE == self.__export_mode:
+            ret_str = json.dumps(ret_json, separators = (',', ':'))
         return deUnicode(ret_str)
 
     # 导出单个文件
@@ -208,6 +211,11 @@ class MyParserXml:
             item[KEY_HASH_TUPLE] = self._getHashValues(setting, KEY_HASH_TUPLE, 'name')
             self.__settings.append(item)
         # print(self.__settings)
+        pass
+
+    # 设置导出模式
+    def setExportMode(self, mode):
+        self.__export_mode = mode
         pass
 
     # 导出配置到文件
