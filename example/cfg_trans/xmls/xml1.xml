@@ -23,6 +23,16 @@
     <value3 int="100" float="100.01"/>
     <value4>10007</value4>
     <value5>10008</value5>
+    <value6>10009</value6>
+    <!-- others  -->
+    <others>
+        <apple name="苹果1"/>
+        <banana name="香蕉1"/>
+        <apple name="苹果2"/>
+        <oringe name="橙子1"/>
+        <oringe name="橙子2"/>
+        <banana name="香蕉2"/>
+    </others>
 </root>
 
 

@@ -24,6 +24,7 @@ KEY_HASH_NUMBER = 'number'
 KEY_HASH_STRING = 'string'
 KEY_HASH_ARRAY = 'array'
 KEY_HASH_DICTS = 'dict'
+KEY_HASH_TUPLE = 'tuple'
 
 str_indent = '    '
 
@@ -70,6 +71,19 @@ class MyParserXml:
                 ret_json[key_value] = self._getJsonXmlNode(child_node, setting, full_name)
         return ret_json
 
+    # 获取配置tuple的json
+    def _getJsonXmlTuple(self, node, setting, pre_name):
+        ret_json = []
+        for child_node in node.childNodes:
+            if child_node.nodeType == 1:
+                node_name = child_node.nodeName
+                full_name = pre_name + '.' + node_name
+                ret_json.append({
+                    'name': node_name,
+                    'data': self._getJsonXmlNode(child_node, setting, full_name),
+                })
+        return ret_json
+
     # 设置节点的json的标签值
     def _getJsonXmlChild(self, node, child_node, node_name, setting, pre_name):
         full_name = pre_name + '.' + node_name
@@ -92,6 +106,8 @@ class MyParserXml:
     
     # 获取节点的json
     def _getJsonXmlNode(self, node, setting, pre_name):
+        if pre_name in setting[KEY_HASH_TUPLE]:
+            return self._getJsonXmlTuple(node, setting, pre_name)
         ret_json = {}
         hash_nodes = {}
         self._setJsonXmlAttrs(node, setting, ret_json, pre_name)
@@ -180,6 +196,7 @@ class MyParserXml:
             item[KEY_HASH_STRING] = self._getHashValues(setting, KEY_HASH_STRING)
             item[KEY_HASH_ARRAY] = self._getHashValues(setting, KEY_HASH_ARRAY)
             item[KEY_HASH_DICTS] = self._getHashValues(setting, KEY_HASH_DICTS, 'key')
+            item[KEY_HASH_TUPLE] = self._getHashValues(setting, KEY_HASH_TUPLE)
             self.__settings.append(item)
         # print(self.__settings)
         pass
