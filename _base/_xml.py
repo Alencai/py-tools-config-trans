@@ -49,7 +49,12 @@ class MyParserXml:
         obj = {}
         values = setting.getElementsByTagName(tag_name)
         for value in values:
-            key = 'root.' + value.childNodes[0].nodeValue.strip()
+            childs = value.childNodes
+            key = 'root'
+            if len(childs) > 0:
+                node_value = childs[0].nodeValue.strip()
+                if len(node_value) > 0:
+                    key = key + '.' + node_value
             obj[key] = attr_name and value.getAttribute(attr_name) or True
         return obj
 
@@ -78,10 +83,7 @@ class MyParserXml:
             if child_node.nodeType == 1:
                 node_name = child_node.nodeName
                 full_name = pre_name + '.' + node_name
-                ret_json.append({
-                    'name': node_name,
-                    'data': self._getJsonXmlNode(child_node, setting, full_name),
-                })
+                ret_json.append([node_name, self._getJsonXmlNode(child_node, setting, full_name)])
         return ret_json
 
     # 设置节点的json的标签值
