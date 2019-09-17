@@ -29,7 +29,7 @@
         <ignore> value6 </ignore>
         <!-- others -->
         <array> others </array>
-        <tuple> others </tuple>
+        <tuple name="fruits"> others </tuple>
     </table>
     <table path_in="xml1.xml" path_out="table2" autonumber="1">
         <!-- animal -->

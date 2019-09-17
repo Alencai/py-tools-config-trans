@@ -106,11 +106,14 @@ class MyParserXml:
     
     # 获取节点的json
     def _getJsonXmlNode(self, node, setting, pre_name):
-        if pre_name in setting[KEY_HASH_TUPLE]:
-            return self._getJsonXmlTuple(node, setting, pre_name)
         ret_json = {}
-        hash_nodes = {}
         self._setJsonXmlAttrs(node, setting, ret_json, pre_name)
+        if pre_name in setting[KEY_HASH_TUPLE]:
+            str_name = setting[KEY_HASH_TUPLE][pre_name]
+            if type(str_name) == str:
+                ret_json[str_name] = self._getJsonXmlTuple(node, setting, pre_name)
+            return ret_json
+        hash_nodes = {}
         for child_node in node.childNodes:
             # # 正常节点信息（nodeType： 1节点标签内容、 3节点标签间首个text、 8注释内容）
             # print("xml node: type = %d, name = %s, value = %s" % (child_node.nodeType, child_node.nodeName, child_node.nodeValue))
@@ -196,7 +199,7 @@ class MyParserXml:
             item[KEY_HASH_STRING] = self._getHashValues(setting, KEY_HASH_STRING)
             item[KEY_HASH_ARRAY] = self._getHashValues(setting, KEY_HASH_ARRAY)
             item[KEY_HASH_DICTS] = self._getHashValues(setting, KEY_HASH_DICTS, 'key')
-            item[KEY_HASH_TUPLE] = self._getHashValues(setting, KEY_HASH_TUPLE)
+            item[KEY_HASH_TUPLE] = self._getHashValues(setting, KEY_HASH_TUPLE, 'name')
             self.__settings.append(item)
         # print(self.__settings)
         pass
