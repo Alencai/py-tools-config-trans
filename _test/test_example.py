@@ -17,13 +17,14 @@ from _base import *
 
 # # 示例： xml配置表
 # parser = xml.MyParserXml()
+# parser.setExportMode(MODE_SINGLE)
 # parser.parseSettingXml("./../example/xmls/setting.xml")
-# parser.exportFiles('./../example/xmls', "./../.out/xmls", 'json')
+# parser.exportFiles('./../example/xmls', "./../.out/xmls", TYPE_JSON)
 
 # # 示例： excel配置表
 # parser = excel.MyParserExcel()
 # parser.parseSettingXml("./../example/excels/setting.xml")
-# parser.exportFiles('./../example/excels', "./../.out/excels", 'json')
+# parser.exportFiles('./../example/excels', "./../.out/excels", TYPE_JSON)
 
 # # 示例： 移除后缀文件
 # removeWithSuffix("./../.out/excels", "json")
@@ -35,6 +36,7 @@ from _base import *
 # 示例： 颜色
 color = randomRGB()
 print(color, reverseRGB(color))
+
 
 
 

@@ -17,3 +17,6 @@ TYPE_XML = 'xml'
 TYPE_EXCEL = 'excel'
 TYPE_JSON = 'json'
 
+MODE_NORMAL = 'normal'
+MODE_SINGLE = 'single'
+
