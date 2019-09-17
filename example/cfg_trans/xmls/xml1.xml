@@ -1,4 +1,4 @@
-<root>
+<root name="testxml">
     <person>
         <man id="1001" weight="1.1" name="小明"/>
         <man id="1002" weight="1.2" name="大张"/>

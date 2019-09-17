@@ -19,6 +19,7 @@ KEY_PATH_IN = 'path_in'
 KEY_PATH_OUT = 'path_out'
 KEY_AUTONUMBER = 'autonumber'
 KEY_ISDIR = 'isdir'
+KEY_ROOT = 'root'
 KEY_HASH_IGNORE = 'ignore'
 KEY_HASH_NUMBER = 'number'
 KEY_HASH_STRING = 'string'
@@ -49,13 +50,10 @@ class MyParserXml:
         obj = {}
         values = setting.getElementsByTagName(tag_name)
         for value in values:
-            childs = value.childNodes
-            key = 'root'
-            if len(childs) > 0:
-                node_value = childs[0].nodeValue.strip()
-                if len(node_value) > 0:
-                    key = key + '.' + node_value
-            obj[key] = attr_name and value.getAttribute(attr_name) or True
+            if len(value.childNodes) > 0:
+                key = value.childNodes[0].nodeValue.strip()
+                if len(key) > 0:
+                    obj[key] = attr_name and value.getAttribute(attr_name) or True
         return obj
 
     # 获取配置array的json
@@ -137,7 +135,8 @@ class MyParserXml:
     
     # 返回json字符串
     def _exportJsonStr(self, ele_root, setting):
-        ret_json = self._getJsonXmlNode(ele_root, setting, 'root')
+        name_root = ele_root.nodeName
+        ret_json = self._getJsonXmlNode(ele_root, setting, name_root)
         ret_str = json.dumps(ret_json, sort_keys = True, indent = 4) # encoding = 'utf-8'
         return deUnicode(ret_str)
 
@@ -150,6 +149,10 @@ class MyParserXml:
             assert xml_dom, ('Error: can not find file: %s' % (file_in))
             ele_root = xml_dom.documentElement
             assert ele_root, ('Error: can not find root element')
+            name_root = ele_root.nodeName
+            if setting[KEY_ROOT] and name_root != setting[KEY_ROOT]:
+                llog('Ignore file.')
+                return
             write_path, json_str = None, None
             if out_type == TYPE_JSON and file_out:
                 write_path = os.path.join(out_dir, file_out + '.json')
@@ -195,6 +198,7 @@ class MyParserXml:
             item[KEY_PATH_OUT] = setting.getAttribute(KEY_PATH_OUT)
             item[KEY_AUTONUMBER] = (setting.getAttribute(KEY_AUTONUMBER) == '1')
             item[KEY_ISDIR] = (setting.getAttribute(KEY_ISDIR) == '1')
+            item[KEY_ROOT] = setting.getAttribute(KEY_ROOT)
             item[KEY_HASH_IGNORE] = self._getHashValues(setting, KEY_HASH_IGNORE)
             item[KEY_HASH_NUMBER] = self._getHashValues(setting, KEY_HASH_NUMBER)
             item[KEY_HASH_STRING] = self._getHashValues(setting, KEY_HASH_STRING)
