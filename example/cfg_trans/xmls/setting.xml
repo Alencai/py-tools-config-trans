@@ -12,6 +12,7 @@
     table/dict:  dict字典:  节点名称（树状结构，每一层用“.”隔开）
     table/dict.key:  dict字典的主键
     table/tuple:  tuple元祖: 节点名称（树状结构，每一层用“.”隔开）
+    table/tuple.name:  tuple元祖名称
 -->
 <config>
     <table path_in="xml1.xml" path_out="table1" autonumber="0">
