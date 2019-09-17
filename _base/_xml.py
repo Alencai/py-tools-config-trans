@@ -150,8 +150,9 @@ class MyParserXml:
             ele_root = xml_dom.documentElement
             assert ele_root, ('Error: can not find root element')
             name_root = ele_root.nodeName
-            if setting[KEY_ROOT] and name_root != setting[KEY_ROOT]:
-                llog('Ignore file.')
+            name_target_root = setting[KEY_ROOT]
+            if name_target_root and name_root != name_target_root:
+                llog('Skip file with root: %s' % name_target_root)
                 return
             write_path, json_str = None, None
             if out_type == TYPE_JSON and file_out:
