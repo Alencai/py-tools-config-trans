@@ -1,7 +1,7 @@
 <root name="testxml">
     <person>
-        <man id="1001" weight="1.1" name="小明"/>
-        <man id="1002" weight="1.2" name="大张"/>
+        <man id="1001" weight="1.1" name="小明" male="true" student="1"/>
+        <man id="1002" weight="1.2" name="大张" male="false" student="0"/>
     </person>
     <animal>
         <pet>

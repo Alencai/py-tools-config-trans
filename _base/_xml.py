@@ -21,27 +21,74 @@ KEY_AUTONUMBER = 'autonumber'
 KEY_ISDIR = 'isdir'
 KEY_ROOT = 'root'
 KEY_HASH_IGNORE = 'ignore'
-KEY_HASH_NUMBER = 'number'
-KEY_HASH_STRING = 'string'
 KEY_HASH_ARRAY = 'array'
 KEY_HASH_DICTS = 'dict'
 KEY_HASH_TUPLE = 'tuple'
+KEY_HASH_HANDLE = 'handle'
+
+# -------------------------------------------------
+
+def handle_autonumber(v):
+    tn = type(v).__name__
+    if tn == 'str' or tn == 'unicode':
+        if getInt(v):
+            return int(v)
+        if getDouble(v):
+            return float(v)
+    return v
+
+def handle_to_int(v):
+    tn = type(v).__name__
+    if tn == "int" or tn == "float":
+        return int(v)
+    if tn == 'str' or tn == 'unicode':
+        if getDouble(v):
+            return int(v)
+    return 0
+
+def handle_to_num(v):
+    tn = type(v).__name__
+    if tn == "int" or tn == "float":
+        return float(v)
+    if tn == 'str' or tn == 'unicode':
+        if getDouble(v):
+            return float(v)
+    return 0
+
+def handle_to_bool(v):
+    tn = type(v).__name__
+    if tn == 'str' or tn == 'unicode':
+        v = v.lower()
+    if v == 1 or v == "1" or v == "true":
+        return True
+    return False
+
+def handle_to_str(v):
+    tn = type(v).__name__
+    if tn == 'str' or tn == 'unicode' or tn == "int" or tn == "float" or tn == "bool":
+        return str(v)
+    return v
 
 # -------------------------------------------------
 
 class MyParserXml:
     __export_mode = MODE_NORMAL
+    __handle_func = {}
     __settings = []
+
+    def __init__(self):
+        self.setHandleFunc('to_int', handle_to_int)
+        self.setHandleFunc('to_num', handle_to_num)
+        self.setHandleFunc('to_bool', handle_to_bool)
+        self.setHandleFunc('to_str', handle_to_str)
+        pass
     
-    # 转化属性类型
-    def _transAttrValue(self, value, setting, full_name):
-        to_number = (full_name in setting[KEY_HASH_NUMBER])
-        to_string = (full_name in setting[KEY_HASH_STRING])
-        if to_number or (setting[KEY_AUTONUMBER] and not to_string):
-            if getInt(value):
-                value = int(value)
-            elif getDouble(value):
-                value = float(value)
+    # 属性值特别处理
+    def _checkHandleValue(self, value, setting, full_name):
+        if setting[KEY_AUTONUMBER]:
+            value = handle_autonumber(value)
+        if full_name in setting[KEY_HASH_HANDLE]:
+            value = self.getHandleValue(setting[KEY_HASH_HANDLE][full_name], value)
         return value
 
     # 获取指定xml节点为键值对象
@@ -100,7 +147,7 @@ class MyParserXml:
             if full_name in setting[KEY_HASH_IGNORE]:
                 continue
             value = node.getAttribute(key)
-            ret_json[key] = self._transAttrValue(value, setting, full_name)
+            ret_json[key] = self._checkHandleValue(value, setting, full_name)
         pass
     
     # 获取节点的json
@@ -110,25 +157,26 @@ class MyParserXml:
         if pre_name in setting[KEY_HASH_TUPLE]:
             str_name = setting[KEY_HASH_TUPLE][pre_name]
             ret_json[str_name] = self._getJsonXmlTuple(node, setting, pre_name)
-            return ret_json
-        hash_nodes = {}
-        for child_node in node.childNodes:
-            # # 正常节点信息（nodeType： 1节点标签内容、 3节点标签间首个text、 8注释内容）
-            # print("xml node: type = %d, name = %s, value = %s" % (child_node.nodeType, child_node.nodeName, child_node.nodeValue))
-            if child_node.nodeType == 3:
-                if len(node.childNodes) == 1 and len(ret_json.keys()) == 0:
-                    value = (child_node.nodeValue or "").strip(' \n\r\t\b')
-                    return self._transAttrValue(value, setting, pre_name)
-            if child_node.nodeType == 1:
-                node_name = child_node.nodeName
-                if node_name in hash_nodes:
-                    continue
-                hash_nodes[node_name] = True
-                full_name = pre_name + '.' + node_name
-                if full_name in setting[KEY_HASH_IGNORE]:
-                    continue
-                ret_json[node_name] = self._getJsonXmlChild(node, child_node, node_name, setting, pre_name)
-        return ret_json
+        else:
+            hash_nodes = {}
+            for child_node in node.childNodes:
+                # # 正常节点信息（nodeType： 1节点标签内容、 3节点标签间首个text、 8注释内容）
+                # print("xml node: type = %d, name = %s, value = %s" % (child_node.nodeType, child_node.nodeName, child_node.nodeValue))
+                if child_node.nodeType == 3:
+                    if len(node.childNodes) == 1 and len(ret_json.keys()) == 0:
+                        value = (child_node.nodeValue or "").strip(' \n\r\t\b')
+                        return self._checkHandleValue(value, setting, pre_name)
+                if child_node.nodeType == 1:
+                    node_name = child_node.nodeName
+                    if node_name in hash_nodes:
+                        continue
+                    hash_nodes[node_name] = True
+                    full_name = pre_name + '.' + node_name
+                    if full_name in setting[KEY_HASH_IGNORE]:
+                        continue
+                    ret_json[node_name] = self._getJsonXmlChild(node, child_node, node_name, setting, pre_name)
+            pass
+        return self._checkHandleValue(ret_json, setting, pre_name)
     
     #-----------------------------------------------------------------------------------
     
@@ -204,11 +252,10 @@ class MyParserXml:
             item[KEY_ISDIR] = (setting.getAttribute(KEY_ISDIR) == '1')
             item[KEY_ROOT] = setting.getAttribute(KEY_ROOT)
             item[KEY_HASH_IGNORE] = self._getHashValues(setting, KEY_HASH_IGNORE)
-            item[KEY_HASH_NUMBER] = self._getHashValues(setting, KEY_HASH_NUMBER)
-            item[KEY_HASH_STRING] = self._getHashValues(setting, KEY_HASH_STRING)
             item[KEY_HASH_ARRAY] = self._getHashValues(setting, KEY_HASH_ARRAY)
             item[KEY_HASH_DICTS] = self._getHashValues(setting, KEY_HASH_DICTS, 'key')
             item[KEY_HASH_TUPLE] = self._getHashValues(setting, KEY_HASH_TUPLE, 'name')
+            item[KEY_HASH_HANDLE] = self._getHashValues(setting, KEY_HASH_HANDLE, 'func')
             self.__settings.append(item)
         # print(self.__settings)
         pass
@@ -217,6 +264,18 @@ class MyParserXml:
     def setExportMode(self, mode):
         self.__export_mode = mode
         pass
+
+    # 设置特殊处理方法
+    def setHandleFunc(self, name, func):
+        self.__handle_func[name] = func
+        pass
+
+    # 获取特殊处理结果
+    def getHandleValue(self, name, value):
+        if name in self.__handle_func:
+            func = self.__handle_func[name]
+            value = func(value)
+        return value
 
     # 导出配置到文件
     def exportFiles(self, in_dir, out_dir, out_type):

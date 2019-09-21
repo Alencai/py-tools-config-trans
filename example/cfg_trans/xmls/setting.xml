@@ -6,28 +6,35 @@
     table.autonumber : 是否自动判断int、double类型并以此类型存储（0否、1是）
     table.isdir      : 是否目录（0否、1是）
     table.root       : 指定root节点名称（如果指定，则只会转化指定root的xml）
-    table/ignore: 忽略该节点
-    table/number: 指定该字段为number（autonumber=0时，默认全部导出为string）
-    table/string: 指定该字段为string（autonumber=1时，默认将符合的字符串导出为number）
-    table/array: array数组: 节点名称（树状结构，每一层用“.”隔开）
-    table/dict:  dict字典:  节点名称（树状结构，每一层用“.”隔开）
-    table/dict.key:  dict字典的主键
-    table/tuple:  tuple元祖: 节点名称（树状结构，每一层用“.”隔开）
-    table/tuple.name:  tuple元祖名称
+    table/ignore  : 忽略该节点
+    table/array   : array数组: 节点名称（树状结构，每一层用“.”隔开）
+    table/dict    : dict字典:  节点名称（树状结构，每一层用“.”隔开）
+        dict.key    : dict字典的主键
+    table/tuple   : tuple元祖: 节点名称（树状结构，每一层用“.”隔开）
+        tuple.name  : tuple元祖名称
+    table/handle  : 特殊处理
+        handle.func ：特殊处理的回调（传入json值，返回处理后的值）
+            "to_int"： 转为int     不能转化时，则为0
+            "to_num"： 转为float   不能转化时，则为0
+            "to_bool": 转为bool    只判断几个参数：（"true"、"false"、“1”、"0"）
+            "to_str":  转为string （当autonumber=1时，有些字符串会被转为number）
 -->
 <config>
     <table path_in="xml1.xml" path_out="table1" autonumber="0">
         <!-- person -->
-        <number> root.person.man.id </number>
-        <number> root.person.man.weight </number>
-        <string> root.person.man.name </string>
+        <array> root.person.man </array>
+        <handle func="to_int"> root.person.man.id </handle>
+        <handle func="to_num"> root.person.man.weight </handle>
+        <handle func="to_str"> root.person.man.name </handle>
+        <handle func="to_bool"> root.person.man.male </handle>
+        <handle func="to_bool"> root.person.man.student </handle>
         <!-- animal -->
         <array> root.animal.pet </array>
         <dict key="id"> root.animal.pet.cat </dict>
         <!-- trans -->
         <array> root.trans.car </array>
         <!-- value -->
-        <number> root.value4 </number>
+        <handle func="to_num"> root.value4 </handle>
         <ignore> root.value6 </ignore>
         <!-- others -->
         <array> root.others </array>
@@ -40,7 +47,7 @@
         <!-- trans -->
         <array> root.trans.car </array>
         <!-- value -->
-        <string> root.value4 </string>
+        <handle func="to_str"> root.value4 </handle>
     </table>
     <table path_in="in" path_out="out" autonumber="0" isdir="1">
         <!-- trans -->

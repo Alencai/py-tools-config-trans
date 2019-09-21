@@ -5,29 +5,29 @@ re_suffix_name = "^.+\.(.+)$"
 
 # --------------------------------------------------------------------
 
-def getDigit(str):
-    # return str.isdigit() # str需是utf8编码 
-    ret = re.search('^(\d+)$', str)
+def getDigit(txt):
+    # return txt.isdigit() # txt需是utf8编码 
+    ret = re.search('^(\d+)$', txt)
     return ret and ret.group(1) or None
 
-def getInt(str):
-    ret = re.search('^(-?\d+)$', str)
+def getInt(txt):
+    ret = re.search('^(-?\d+)$', txt)
     return ret and ret.group(1) or None
 
-def getDouble(str):
-    ret = re.search('^(-?\d*(?:\.\d+)?)$', str)
+def getDouble(txt):
+    ret = re.search('^(-?\d*(?:\.\d+)?)$', txt)
     return ret and ret.group(1) or None
 
-def getExcelInt(str):
-    if len(str) == 0:
+def getExcelInt(txt):
+    if len(txt) == 0:
         return "0"
-    ret = re.search('^(-?\d+)(?:\.0)?$', str)
+    ret = re.search('^(-?\d+)(?:\.0)?$', txt)
     return ret and ret.group(1) or None
 
-def getExcelDouble(str):
-    if len(str) == 0:
+def getExcelDouble(txt):
+    if len(txt) == 0:
         return "0"
-    return getDouble(str)
+    return getDouble(txt)
 
 # 获取文件名的后缀
 def getSuffix(name):
